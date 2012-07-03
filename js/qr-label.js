@@ -7,7 +7,7 @@ $(function($){
             for (var y = 0; y < page.y; y++ ) {
                 html += '<tr>';
                 for (var x=0; x < page.x; x++) {
-                    html += '<td  id="'+x+'x'+y+'"><img src="'+img+'" /></td>';
+                    html+='<td id="'+x+'x'+y+'" style="width:'+page.width+'; height: '+page.height+';" ><img style="width:'+page.width+'; height: '+page.height+';" src="'+img+'" /></td>';
                 }
                 html +='</tr >';
             }
@@ -17,7 +17,8 @@ $(function($){
             
             $('#main').html(html);
             $('#print_sheet td').addClass('label');
-            $('.label').css('width', page.width).css('height', page.height); 
+            $('.label').css('width', page.width).css('height', page.height);
+            $('.label > img').css('width', page.width).css('height', page.height); 
             $('#print_view').click(function(){
                 var p=new Object();
                 p.img=img;

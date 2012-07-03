@@ -76,7 +76,7 @@ class GigCableLabel {
     
     private $arg=array();
     
-    function __construct($size=0) {
+    function __construct($size=10) {
         if (! is_numeric($size)) {
             header("HTTP/1.0 403 Forbidden");
             $this->error="<h1>HTTP/1.0 403 Forbidden</h1><p>You Must enter a number</p><p>You entered: $size</p><hr />";
@@ -123,7 +123,7 @@ D
     function __get($name) {
         switch ($name) {
             case 'matrixPointSize':
-             if (!array_key_exists($name, $this->arg)) return 5;
+             if (!array_key_exists($name, $this->arg)) return 4;
             break;
             case 'errorCorrectionLevel':
              if (!array_key_exists($name, $this->arg)) return 'H';
@@ -132,10 +132,17 @@ D
              if (!array_key_exists($name, $this->arg)) return 40;
             break;
             case 'size':
-             if (!array_key_exists($name, $this->arg)) return 0;
+             if (!array_key_exists($name, $this->arg)) return 10;
             break;
             case 'desc':
-             if (!array_key_exists($name, $this->arg)) return $this->size;
+             if (!array_key_exists($name, $this->arg)) return <<<D
+Type: 
+Uses:
+Pins:
+Date:
+length:
+D
+;
             break;
         }
         if (array_key_exists($name, $this->arg)) {
@@ -185,6 +192,7 @@ D
          $('#maker').dialog({
             title: '$this->title',
             closeOnEscape: false,
+            width: '350px',
             position: ['right', 'top']
          });
          $('span.ui-icon.ui-icon-closethick').remove();

@@ -22,7 +22,11 @@ These types of coded images have many uses for inventory, logistics, documentati
 -you can embed setup instructions for projectors, speakers, lighting and audio boards
 -you could also embed your pack list for each create you ship
 
-the uses are endless, use your imagination 
+the uses are endless, use your imagination, play around, test your codes with your phone, make sure they work!!!
+
+I've noticed that streched QR code images don't work with Norton Snap on my iPhone 4, test your labels before you print any.
+
+all print pages don't need any linked styles or images, images are base64 encoded.
 
 
 

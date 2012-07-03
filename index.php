@@ -17,7 +17,7 @@ require_once 'gigcablelabel.class.php';
         for ($a=0;$a < $y; $a++) {
             $table.='<tr>';
             for ($b=0; $b < $x; $b++) {
-                $table.='<td style="width:'.$width.'; height: '.$height.';" ><img src="'.$img.'" /></td>';
+                $table.='<td style="width:'.$width.'; height: '.$height.';" ><img style="width:'.$width.'; height: '.$height.';" src="'.$img.'" /></td>';
             }
             $table.='</tr>';
         }
@@ -29,10 +29,9 @@ require_once 'gigcablelabel.class.php';
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="Content-Language" content="en-us" />
         <title>Print Page</title>
-        <link class="css" type="text/css" href="css/style.css" rel="stylesheet" />
-        <link class="css" type="text/css" href="css/qr.css" rel="stylesheet" />
         <style type="text/css">
          body, table, tbody, td,tr { margin: 0; padding: 0; border-width:0; border-spacing: 0; border-collapse:collapse; }
+      
          table {
             position: absolute;
             top:0;

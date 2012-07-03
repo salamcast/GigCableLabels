@@ -3,7 +3,9 @@
             }
          img {  
                 margin: 0; 
-                padding: 0px; 
+                padding: 0px;
+                width: auto;
+                height: auto;
          }
         td {
             vertical-align:middel;
