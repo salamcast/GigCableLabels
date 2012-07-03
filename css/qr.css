@@ -1,0 +1,17 @@
+            textarea {
+                width: 200px;
+            }
+         img {  
+                margin: 0; 
+                padding: 0px; 
+         }
+        td {
+            vertical-align:middel;
+             text-align:center;
+        }
+          .label {
+             border-width:1px;
+             border-top-style:dotted;
+             border-right-style:dotted;
+             
+         }
