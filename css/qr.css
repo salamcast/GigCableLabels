@@ -1,5 +1,5 @@
             textarea {
-                width: 200px;
+                width: 330px;
             }
          img {  
                 margin: 0; 
@@ -11,9 +11,34 @@
             vertical-align:middel;
              text-align:center;
         }
+        p {
+            margin: 5px;
+            padding: 5px;
+        }
           .label {
              border-width:1px;
              border-top-style:dotted;
              border-right-style:dotted;
              
+         }
+         #main {
+            float: left;
+            margin: 0; 
+            padding: 0px;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+         }
+         #maker {
+            width: 350px;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            right: 0;
+            
+         }
+         #label {
+            margin-left: 20px;
+            margin-bottom: 10px;
          }

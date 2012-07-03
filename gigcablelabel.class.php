@@ -189,13 +189,13 @@ D
         $(function(){
          var label = '$this->label';
          $('#label').attr('src', label);
-         $('#maker').dialog({
-            title: '$this->title',
-            closeOnEscape: false,
-            width: '350px',
-            position: ['right', 'top']
-         });
-         $('span.ui-icon.ui-icon-closethick').remove();
+         //$('#maker').dialog({
+         //   title: '$this->title',
+         //   closeOnEscape: false,
+         //   width: '350px',
+         //   position: ['right', 'top']
+         //});
+         //$('span.ui-icon.ui-icon-closethick').remove();
         });
         </script>
         <script type="text/javascript" src="js/qr-label.js"></script>
@@ -207,15 +207,16 @@ D
 $this->error
        <div id='main' ></div>
        <div id='maker'>
-        <h3>Label Maker</h3>
+        <h3 >Label Maker</h3>
    
         <form action="$this->url" >
-         <p>Number: <input type='text' size='5' name='label' value="$this->size" />$unit<br />$size</p>
-         <p>Discription:<br /><textarea name='desc' rows='3'  >$this->desc</textarea></p>
-         <p><input type='submit' value="Make Label"/></p>
+         <p>Number: <input type='text' size='5' name='label' value="$this->size" />$unit<br />$size<br/>
+          Discription:<br /><textarea name='desc' rows='3'  >$this->desc</textarea><br />
+          <input type='submit' value="Make Label"/></p>
         </form>
-        <h3>Click Label for preview</h3>
-        <img id='label' alt='$this->size'/>
+        <h3 >Click Label for preview</h3>
+        <p>
+         <img id='label' alt='$this->size'/>
          <select id="page_size">
           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' selected="selected" >2" Width x 4" Length - 10/Sheet</option>
           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' >2" Width x 4" Length - 10/Sheet</option>
@@ -223,7 +224,7 @@ $this->error
           <option value='{"width":"4in", "height":"3.33in", "number":"6", "x":"2", "y":"3"}' >3.33" Width x 4" Length - 6/Sheet</option>
           <option value='{"width":"2.62in", "height":"1in", "number":"30", "x":"3", "y":"10"}' > 1" Width x 2.62" Length 30/Sheet</option>   
          </select>
-
+        </p>
        </div>
 
     </body>

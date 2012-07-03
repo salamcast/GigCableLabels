@@ -1,4 +1,19 @@
 $(function($){
+         $('#main').html('<pre></pre>');
+         $('#main > pre').load('README.txt');
+// load jQuery UI
+    $('div').addClass('ui-widget ui-widget-content ui-corner-all ');
+    $('p').addClass('ui-dialog-content ui-widget-content');
+    $('input').addClass('ui-dialog-content ui-widget-content');
+    $('select').addClass('ui-dialog-content ui-widget-content');
+    $('textarea').addClass('ui-dialog-content ui-widget-content');
+
+    $('h1').addClass('ui-widget-header ui-corner-all ');
+    $('h2').addClass('ui-widget-header ui-corner-all ');
+    $('h3').addClass('ui-widget-header ui-corner-all ');
+    $('h4').addClass('ui-widget-header ui-corner-all ');
+    $('h5').addClass('ui-widget-header ui-corner-all ');
+
 
          $('#label').click(function(){
             var img=$(this).attr('src');
@@ -14,7 +29,7 @@ $(function($){
             html += '</table>';
             $('#print_view').remove();
             $('#maker').append('<button id="print_view">Print Page</button>');
-            
+                $('button').addClass('ui-dialog-content ui-widget-content');
             $('#main').html(html);
             $('#print_sheet td').addClass('label');
             $('.label').css('width', page.width).css('height', page.height);
