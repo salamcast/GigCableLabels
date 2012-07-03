@@ -1,6 +1,6 @@
 @author Karl Holz <newaeon|a|mac|d|com>
 @package GigCableLabel
-
+@link http://www.salamcast.com/demos/GigCableLabels/
 
 I currently work as a tech and rigger in the Staging and AV world with various companies 
 and I have noticed that only a few have a sane way of color coding and labeling their many
