@@ -10,46 +10,112 @@ class GigCableLabel {
      * @param array $color resistor color code matching to text color
      */
     private $color=array(
-     array(
+     '0' => array(
      'code' =>  'black', //0
      'text' => 'white', //0 black
      ),
-     array(
+     '1' =>array(
      'code' =>  'brown', //1
      'text' => 'white', //1 brown
      ),
-     array(
+     '2' =>array(
      'code' =>  'red',   //2
      'text' => 'white', //2 red
      ),
-     array(
+     '3' =>array(
      'code' =>  'orange',//3
      'text' => 'white', //3 orange
      ),
-     array(
+     '4' =>array(
      'code' =>  'yellow',//4
      'text' => 'black', //4 yellow
      ),
-     array(
+     '5' =>array(
      'code' =>  'green', //5
      'text' => 'white' //5 green
      ),
-     array(
+     '6' =>array(
      'code' =>  'blue',  //6
      'text' => 'white' //6 blue
      ),
-     array(
+     '7' =>array(
      'code' =>  'violet',//7
      'text' => 'white' //7 violet
      ),
-     array(
+     '8' =>array(
      'code' =>  'grey',  //8
      'text' => 'black' //8 grey
      ),
-     array(
-     'code' =>  'white',  //9
-     'text' => 'black'  //9 white
+     '9' =>array(//9 white
+     'code' =>  'white',
+     'text' => 'black'  
+     ),
+     'G' => array(//G gold
+     'code' =>  'gold',  
+     'text' => 'green'  
+     ),
+     'S'=>  array(//S silver
+     'code' =>  'silver',  
+     'text' => 'blue'  
+     ), 
+     'N'=> array(//N None
+     'code' =>  'none',  
+     'text' => 'red'  
+     ),
+     //a-o minus G, S, N
+    'A' => array(
+     'code' =>  'blue',
+     'text' => 'white' 
+     ),
+    'B' =>array(
+     'code' =>  'red',
+     'text' => 'white' 
+     ),
+    'C' =>array(
+     'code' =>  'blue',
+     'text' => 'white' 
+     ),
+    'D' =>array(
+     'code' =>  'red',
+     'text' => 'white' 
+     ),
+    'E' =>array(
+     'code' =>  'blue',
+     'text' => 'white' 
+     ),
+    'F' =>array(
+     'code' =>  'red',
+     'text' => 'white' 
+     ),
+    'H' =>array(
+     'code' =>  'blue',
+     'text' => 'white' 
+     ),
+    'I' =>array(
+     'code' =>  'red',
+     'text' => 'white' 
+     ),
+    'J' =>array(
+     'code' =>  'blue',
+     'text' => 'white' 
+     ),
+    'K' =>array(
+     'code' =>  'red',
+     'text' => 'white'
+     ),
+    'L' => array(
+     'code' =>  'blue',
+     'text' => 'white'
+     ),
+    'M'=>  array(
+     'code' =>  'red',
+     'text' => 'white' 
+     ), 
+    'P'=> array(
+     'code' =>  'blue',
+     'text' => 'white' 
      )
+     
     );
     
     //private $code=array();
@@ -76,27 +142,18 @@ class GigCableLabel {
     
     private $arg=array();
     
-    function __construct($size=10) {
-        if (! is_numeric($size)) {
-            header("HTTP/1.0 403 Forbidden");
-            $this->error="<h1>HTTP/1.0 403 Forbidden</h1><p>You Must enter a number</p><p>You entered: $size</p><hr />";
-            $this->title='HTTP/1.0 403 Forbidden';
+    function __construct($size='') {
+        $this->qr=FALSE;
+        $this->unit='';
+        $this->url='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+        $this->error='';
+        $this->title=__CLASS__;
+        if ($size=='') {
             echo $this;
             exit();
         }
         $this->size=$size;
-        $this->desc=<<<D
-Type: 
-Uses:
-Pins:
-Date:
-length:
-D
-        ;
-        $this->unit='F';
-        $this->url='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-        $this->error='';
-        $this->title=__CLASS__;
+
         return TRUE;
     }
     
@@ -109,9 +166,6 @@ D
                 if ($value < 11 && $value > 0) $this->arg[$name]= min(max((int)$value, 1), 10);
                 $this->height=$this->arg[$name];
             break;
-            case 'size':
-                if (is_numeric($value)) $this->arg[$name]=$value;
-            break;
             default:
                 $this->arg[$name]=$value;                
             break;
@@ -123,7 +177,7 @@ D
     function __get($name) {
         switch ($name) {
             case 'matrixPointSize':
-             if (!array_key_exists($name, $this->arg)) return 4;
+             if (!array_key_exists($name, $this->arg)) return 2;
             break;
             case 'errorCorrectionLevel':
              if (!array_key_exists($name, $this->arg)) return 'H';
@@ -131,18 +185,14 @@ D
             case 'width':
              if (!array_key_exists($name, $this->arg)) return 40;
             break;
+            case 'height':
+             if (!array_key_exists($name, $this->arg)) return 80;
+            break;
             case 'size':
              if (!array_key_exists($name, $this->arg)) return 10;
             break;
             case 'desc':
-             if (!array_key_exists($name, $this->arg)) return <<<D
-Type: 
-Uses:
-Pins:
-Date:
-length:
-D
-;
+             if (!array_key_exists($name, $this->arg)) return 'Not data has be cued for QR encoding';
             break;
         }
         if (array_key_exists($name, $this->arg)) {
@@ -152,30 +202,76 @@ D
     }
     
     function __toString() {
-//        if (stristr($_SERVER['HTTP_ACCEPT'], "application/xhtml+xml")) {
-        //    $this->mime="application/xhtml+xml";
-        //    header("Content-Type: ".  $this->mime);
-        //    print '<?xml version="1.0" encoding="utf-8"? >';
-        // } else {
-            $this->mime="text/html";
-            header("Content-Type: ".  $this->mime);
-   //     }
-        
-        $unit='<select name="unit">';
-        $unit.='     <option value=""'.(($this->unit=='')?' selected="selected"':'').'></option>';
-        $unit.='     <option value="F"'.(($this->unit=='F')?' selected="selected"':'').'>Feet</option>';
-        $unit.='     <option value="M"'.(($this->unit=='M')?' selected="selected"':'').'>Meter</option>';
+
+        $this->mime="text/html";
+        header("Content-Type: ".  $this->mime);   
+
+
+        // size unit
+        $unit='<select id="unit">';
+        $unit.='     <option value="">N/A</option>';
+        $unit.='     <option value="\'">Feet</option>';
+        $unit.='     <option value="m">Meter</option>';
         $unit.=' </select>';
-        $size='Size: <select name="size" >';
+        //uses
+        $uses='<select id="department">';
+        $uses.='     <option value="NA" >none</option>';
+        $uses.='     <option value="Power" >Power</option>';
+        $uses.='     <option value="Rigging" >Rigging</option>';
+        $uses.='     <option value="Motors" >Motors</option>';
+        $uses.='     <option value="Lighting" >Lighting</option>';
+        $uses.='     <option value="Audio" >Audio</option>';
+        $uses.='     <option value="Video" >Video</option>';
+        $uses.='     <option value="AV" >A/V</option>';
+        $uses.='     <option value="I.T." >I.T.</option>';
+        $uses.=' </select>';
+        //type
+        $type='<select id="type">';
+        $type.='     <option value="unknown" >Uknown</option>';
+        $type.='     <option value="15 A u-Ground" >15 A u-Ground</option>';
+        $type.='     <option value="15 A twist" >15 A twist</option>';
+        $type.='     <option value="20 A twist" >20 A twist</option>';
+        $type.='     <option value="DMX-3" >DMX-3</option>';
+        $type.='     <option value="DMX-4" >DMX-4</option>';
+        $type.='     <option value="DMX-5" >DMX-5</option>';
+        $type.='     <option value="NL4" >NL4</option>';
+        $type.='     <option value="NL8" >NL8</option>';
+        $type.='     <option value="cat-5|RJ45" >cat-5/RJ45</option>';
+        $type.='     <option value="1|4 " >1/4</option>';
+        $type.='     <option value="1|8" >1/8</option>';
+        $type.='     <option value="RCA" >RCA</option>';
+        $type.='     <option value="S-Video" >S-Video</option>';
+        $type.='     <option value="VGA" >VGA</option>';
+        $type.='     <option value="DVI" >DVI</option>';
+        $type.='     <option value="HDMI" >HDMI</option>';
+        $type.='     <option value="12G SOCA" >12G SOCA</option>';
+        $type.='     <option value="16G SOCA" >16G SOCA</option>';
+        $type.='     <option value="Motor SOCA" >Motor SOCA</option>';
+        $type.='     <option value="Motor Control" >Motor Control</option>';
+        $type.=' </select>';
+        
+        $label='<select id="label1" >';
+        foreach (array('',0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
+        $label .='</select>';
+        $label.='<select id="label2" >';
+        foreach (array('',0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
+        $label.='</select>';
+        $label.='<select id="label3" >';
+        foreach (array(0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
+        $label .='</select>';
+        //QR code
+        $size='Size: <select id="size" >';
         foreach (array(1,2,3,4,5,6,7,8,9,10) as $i) $size.='<option value="'.$i.'"'.(($this->matrixPointSize==$i)?' selected="selected"':'').'>'.$i.'</option>';
-        $size .='</select><br /> ';
-        $size.='ECC: <select name="level">';
+        $size .='</select>  ';
+        $size.='ECC: <select id="level">';
         $size.='     <option value="L"'.(($this->errorCorrectionLevel=='L')?' selected="selected"':'').'>L - smallest</option>';
         $size.='     <option value="M"'.(($this->errorCorrectionLevel=='M')?' selected="selected"':'').'>M</option>';
         $size.='     <option value="Q"'.(($this->errorCorrectionLevel=='Q')?' selected="selected"':'').'>Q</option>';
         $size.='     <option value="H"'.(($this->errorCorrectionLevel=='H')?' selected="selected"':'').'>H - best</option>';
         $size.=' </select>';
-        
+        //
+
+        $date=date('m/d/Y',time() );
         return <<<HTML
 <html  xmlns="http://www.w3.org/1999/xhtml" >
     <head>
@@ -184,18 +280,10 @@ D
         <title>$this->title</title>
         <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-        <script type="text/javascript" src="js/json2.js"></script>
+
         <script type="text/javascript" >
         $(function(){
-         var label = '$this->label';
-         $('#label').attr('src', label);
-         //$('#maker').dialog({
-         //   title: '$this->title',
-         //   closeOnEscape: false,
-         //   width: '350px',
-         //   position: ['right', 'top']
-         //});
-         //$('span.ui-icon.ui-icon-closethick').remove();
+        
         });
         </script>
         <script type="text/javascript" src="js/qr-label.js"></script>
@@ -204,29 +292,36 @@ D
  
     </head>
     <body>
-$this->error
+
+       <div id="top" >
+         Size/Code: $label $unit | <input type="checkbox"  id="qr" value="true" checked="checked"/>QR  $size
+         <button id='mklabel'>-= Make =-</button>
+       </div>
        <div id='main' ></div>
        <div id='maker'>
-        <h3 >Label Maker</h3>
-   
-        <form action="$this->url" >
-         <p>Number: <input type='text' size='5' name='label' value="$this->size" />$unit<br />$size<br/>
-          Discription:<br /><textarea name='desc' rows='3'  >$this->desc</textarea><br />
-          <input type='submit' value="Make Label"/></p>
-        </form>
-        <h3 >Click Label for preview</h3>
-        <p>
-         <img id='label' alt='$this->size'/>
-         <select id="page_size">
-          <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' selected="selected" >2" Width x 4" Length - 10/Sheet</option>
-          <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' >2" Width x 4" Length - 10/Sheet</option>
-          <option value='{"width":"8.5in", "height":"11in", "number":"1", "x":"1", "y":"1"}' >8.5" Width x 11" Length - 1/Sheet</option>
-          <option value='{"width":"4in", "height":"3.33in", "number":"6", "x":"2", "y":"3"}' >3.33" Width x 4" Length - 6/Sheet</option>
-          <option value='{"width":"2.62in", "height":"1in", "number":"30", "x":"3", "y":"10"}' > 1" Width x 2.62" Length 30/Sheet</option>   
-         </select>
-        </p>
-       </div>
-
+         <div id="accordion" >
+          <h3><a href="#">Equipment Info Label</a></h3>
+          <div>
+            Type: $type  <br />
+            Department: $uses <br /> 
+            Date: <input type='text' id='date' value="$date" /><br />
+         </div>
+         <h3><a href="#">Phone Label</a></h3><div><fieldset><legend>Phone:</legend><input type='text' id='tel' /></fieldset></div>
+         <h3><a href="#">URL Label</a></h3><div><fieldset><legend>URL:</legend><input type='text'  id='url' /></fieldset></div>
+         <h3><a href="#">Email Label</a></h3><div><fieldset><legend>Email:</legend><input type='text' id='email' /></fieldset></div>
+        </div>
+        <div id="output"><h3>Click Label for preview</h3>
+          <img id='img' alt='$this->size'/>
+          <select id="page_size">
+           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' selected="selected" >2" Width x 4" Length - 10/Sheet</option>
+           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' >2" Width x 4" Length - 10/Sheet</option>
+           <option value='{"width":"8.5in", "height":"11in", "number":"1", "x":"1", "y":"1"}' >8.5" Width x 11" Length - 1/Sheet</option>
+           <option value='{"width":"4in", "height":"3.33in", "number":"6", "x":"2", "y":"3"}' >3.33" Width x 4" Length - 6/Sheet</option>
+           <option value='{"width":"2.62in", "height":"1in", "number":"30", "x":"3", "y":"10"}' > 1" Width x 2.62" Length 30/Sheet</option>   
+          </select>
+         </div>
+        <form action="$this->url" ></form>
+      </div>
     </body>
 </html>
 HTML
@@ -256,16 +351,13 @@ HTML
          $this->height=$h_qr;
          $width+=$w_qr;
         }
+       } else {
+         $this->height=80;
        }
        $stamp = imagecreatetruecolor($width, $this->height);
        foreach ($s as $k) {
-        if (!is_numeric($k)) {
-            $bg_bin=$this->get_desc('gold');
-            $txt_bin=$this->get_desc('silver');
-        } else {
-            $bg_bin= $this->get_bg($k);
-            $txt_bin= $this->get_txt($k);            
-        }
+        $bg_bin= $this->get_bg($k);
+        $txt_bin= $this->get_txt($k);
         $bg = ImageColorAllocate($stamp, $bg_bin[0],  $bg_bin[1],  $bg_bin[2]);
         $txt= ImageColorAllocate($stamp, $txt_bin[0], $txt_bin[1], $txt_bin[2]);
         imagefilledrectangle($stamp, $w, 0, $w+$this->width, $this->height, $bg);
@@ -293,7 +385,8 @@ HTML
 
        if (is_file($filename)) unlink($filename);
        if ($this->qr != '' && is_file($QRfile)) unlink($QRfile);
-       echo $this;
+
+        echo $this->label;
  
     }
     

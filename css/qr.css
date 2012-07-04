@@ -1,24 +1,19 @@
-            textarea {
-                width: 330px;
-            }
+
          img {  
                 margin: 0; 
                 padding: 0px;
-                width: auto;
-                height: auto;
          }
-        td {
-            vertical-align:middel;
-             text-align:center;
-        }
+
         p {
-            margin: 5px;
-            padding: 5px;
+            margin: 2px;
+            padding: 2px;
         }
-          .label {
+          td {
              border-width:1px;
              border-top-style:dotted;
              border-right-style:dotted;
+             text-align: center;
+             vertical-align: middle;
              
          }
          #main {
@@ -26,7 +21,7 @@
             margin: 0; 
             padding: 0px;
             position: absolute;
-            top: 0;
+            top: 40px;
             left: 0;
 
          }
@@ -39,6 +34,35 @@
             
          }
          #label {
-            margin-left: 20px;
-            margin-bottom: 10px;
+            margin-left: 0px;
+            margin-bottom: 0px;
          }
+       
+       #output {
+        position: absolute;
+left: 0;
+width: 301px;
+       }
+#top {
+ position: fixed;
+top: 0;
+left: 0;
+height: 30px;
+width: 71%;
+z-index: 3000;
+}
+
+fieldset {
+    width: 100%;
+    position: relative;
+    left: -25px;
+}
+fieldset > input {
+    width: 95%;
+}
+#output {
+    position: absolute;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+}
