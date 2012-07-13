@@ -5,144 +5,20 @@
  */
 require_once 'phpqrcode/qrlib.php';
 class GigCableLabel {
-//    private $size;
+    private $id=array();
     /**
      * @param array $color resistor color code matching to text color
      */
-    private $color=array(
-     '0' => array(
-     'code' =>  'black', //0
-     'text' => 'white', //0 black
-     ),
-     '1' =>array(
-     'code' =>  'brown', //1
-     'text' => 'white', //1 brown
-     ),
-     '2' =>array(
-     'code' =>  'red',   //2
-     'text' => 'white', //2 red
-     ),
-     '3' =>array(
-     'code' =>  'orange',//3
-     'text' => 'white', //3 orange
-     ),
-     '4' =>array(
-     'code' =>  'yellow',//4
-     'text' => 'black', //4 yellow
-     ),
-     '5' =>array(
-     'code' =>  'green', //5
-     'text' => 'white' //5 green
-     ),
-     '6' =>array(
-     'code' =>  'blue',  //6
-     'text' => 'white' //6 blue
-     ),
-     '7' =>array(
-     'code' =>  'violet',//7
-     'text' => 'white' //7 violet
-     ),
-     '8' =>array(
-     'code' =>  'grey',  //8
-     'text' => 'black' //8 grey
-     ),
-     '9' =>array(//9 white
-     'code' =>  'white',
-     'text' => 'black'  
-     ),
-     'G' => array(//G gold
-     'code' =>  'gold',  
-     'text' => 'green'  
-     ),
-     'S'=>  array(//S silver
-     'code' =>  'silver',  
-     'text' => 'blue'  
-     ), 
-     'N'=> array(//N None
-     'code' =>  'none',  
-     'text' => 'red'  
-     ),
-     //a-o minus G, S, N
-    'A' => array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     ),
-    'B' =>array(
-     'code' =>  'red',
-     'text' => 'white' 
-     ),
-    'C' =>array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     ),
-    'D' =>array(
-     'code' =>  'red',
-     'text' => 'white' 
-     ),
-    'E' =>array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     ),
-    'F' =>array(
-     'code' =>  'red',
-     'text' => 'white' 
-     ),
-    'H' =>array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     ),
-    'I' =>array(
-     'code' =>  'red',
-     'text' => 'white' 
-     ),
-    'J' =>array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     ),
-    'K' =>array(
-     'code' =>  'red',
-     'text' => 'white'
-     ),
-    'L' => array(
-     'code' =>  'blue',
-     'text' => 'white'
-     ),
-    'M'=>  array(
-     'code' =>  'red',
-     'text' => 'white' 
-     ), 
-    'P'=> array(
-     'code' =>  'blue',
-     'text' => 'white' 
-     )
-     
-    );
-    
-    //private $code=array();
-    //private $code_text=array();
+    private $color;
     /**
      * @param array $hex these colours are based on the resister code colors
-     * @link http://i86.photobucket.com/albums/k119/blaylocj/Fig2_colorcode.jpg
      */
-    private $hex=array(
-        'black' => '000000', //0
-        'brown' => '990000', //1
-        'red'   => 'FF0000', //2
-        'orange'=> 'FF6600', //3
-        'yellow'=> 'FFFF00', //4
-        'green' => '00FF00', //5
-        'blue'  => '0000FF', //6
-        'violet'=> 'FF00FF', //7
-        'grey'  => '808080', //8
-        'white' => 'FFFFFF', //9
-        'gold'  => 'D4A017', //G
-        'silver'=> 'C0C0C0', //S
-        'none'  => 'FFFFFF'  //N
-    );
+    private $hex;
     
     private $arg=array();
     
-    function __construct($size='') {
+    
+    function __construct($size='', $code="NA") {
         $this->qr=FALSE;
         $this->unit='';
         $this->url='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
@@ -154,23 +30,222 @@ class GigCableLabel {
         }
         $this->size=$size;
 
+        $this->hex=parse_ini_file(__CLASS__.'/data.ini');
+        // set colour codes
+        switch ($code) {
+            case 'NA':
+            default:
+                $this->color=parse_ini_file(__CLASS__.'/north_america.ini', TRUE);                
+            break;
+        }
+        foreach (glob(__CLASS__.'/ui-*.ini') as $c) {   
+            $this->id[]=str_replace(array(__CLASS__,'.ini', '/ui-' ), array('','',''), $c);
+        }
+
         return TRUE;
     }
     
     function __set($name, $value='') {
         switch ($name) {
             case 'errorCorrectionLevel':
-                if (in_array($value, array('L','M','Q','H')))  $this->arg[$name]= $value;                    
+                if (in_array($value, array('L','M','Q','H'))) {
+                    $this->arg[$name]= $value;
+                } else { $this->arg[$name]='H'; }
             break;
             case 'matrixPointSize':
-                if ($value < 11 && $value > 0) $this->arg[$name]= min(max((int)$value, 1), 10);
-                $this->height=$this->arg[$name];
+                if ($value < 41 && $value > 0) { $this->arg[$name]= min(max((int)$value, 1), 40); }
             break;
-            default:
-                $this->arg[$name]=$value;                
-            break;
-        }
+            case 'desc':
+                $c=strlen($value);
+                    // these numbers are based on the maximum alphanumeric per qrcode ECC Level
+                    // 
 
+                switch ($this->errorCorrectionLevel) {
+                    case 'L':
+                        switch ($c) {
+case $c < 25:$this->matrixPointSize=1;  break;
+case $c < 47:$this->matrixPointSize=2;  break;
+case $c < 77:$this->matrixPointSize=3;  break;
+case $c < 114:$this->matrixPointSize=4;  break;
+case $c < 154:$this->matrixPointSize=5;  break;
+case $c < 195:$this->matrixPointSize=6;  break;
+case $c < 224:$this->matrixPointSize=7;  break;
+case $c < 279:$this->matrixPointSize=8;  break;
+case $c < 335:$this->matrixPointSize=9;  break;
+case $c < 395:$this->matrixPointSize=10;  break;
+case $c < 468:$this->matrixPointSize=11;  break;
+case $c < 535:$this->matrixPointSize=12;  break;
+case $c < 619:$this->matrixPointSize=13;  break;
+case $c < 667:$this->matrixPointSize=14;  break;
+case $c < 758:$this->matrixPointSize=15;  break;
+case $c < 854:$this->matrixPointSize=16;  break;
+case $c < 938:$this->matrixPointSize=17;  break;
+case $c < 1046:$this->matrixPointSize=18;  break;
+case $c < 1153:$this->matrixPointSize=19;  break;
+case $c < 1249:$this->matrixPointSize=20;  break;
+case $c < 1352:$this->matrixPointSize=21;  break;
+case $c < 1460:$this->matrixPointSize=22;  break;
+case $c < 1588:$this->matrixPointSize=23;  break;
+case $c < 1704:$this->matrixPointSize=24;  break;
+case $c < 1853:$this->matrixPointSize=25;  break;
+case $c < 1990:$this->matrixPointSize=26;  break;
+case $c < 2132:$this->matrixPointSize=27;  break;
+case $c < 2223:$this->matrixPointSize=28;  break;
+case $c < 2369:$this->matrixPointSize=29;  break;
+case $c < 2520:$this->matrixPointSize=30;  break;
+case $c < 2677:$this->matrixPointSize=31;  break;
+case $c < 2840:$this->matrixPointSize=32;  break;
+case $c < 3009:$this->matrixPointSize=33;  break;
+case $c < 3183:$this->matrixPointSize=34;  break;
+case $c < 3351:$this->matrixPointSize=35;  break;
+case $c < 3537:$this->matrixPointSize=36;  break;
+case $c < 3729:$this->matrixPointSize=37;  break;
+case $c < 3927:$this->matrixPointSize=38;  break;
+case $c < 4087:$this->matrixPointSize=39;  break;
+case $c < 4296:$this->matrixPointSize=40;  break;
+default: return FALSE;
+                        }
+                    break;
+                    case 'H':
+                        switch ($c) {
+case $c < 10:$this->matrixPointSize=1;  break;
+case $c < 20:$this->matrixPointSize=2;  break;
+case $c < 35:$this->matrixPointSize=3;  break;
+case $c < 50:$this->matrixPointSize=4;  break;
+case $c < 64:$this->matrixPointSize=5;  break;
+case $c < 84:$this->matrixPointSize=6;  break;
+case $c < 93:$this->matrixPointSize=7;  break;
+case $c < 122:$this->matrixPointSize=8;  break;
+case $c < 143:$this->matrixPointSize=9;  break;
+case $c < 174:$this->matrixPointSize=10;  break;
+case $c < 200:$this->matrixPointSize=11;  break;
+case $c < 227:$this->matrixPointSize=12;  break;
+case $c < 259:$this->matrixPointSize=13;  break;
+case $c < 283:$this->matrixPointSize=14;  break;
+case $c < 321:$this->matrixPointSize=15;  break;
+case $c < 365:$this->matrixPointSize=16;  break;
+case $c < 408:$this->matrixPointSize=17;  break;
+case $c < 452:$this->matrixPointSize=18;  break;
+case $c < 493:$this->matrixPointSize=19;  break;
+case $c < 557:$this->matrixPointSize=20;  break;
+case $c < 587:$this->matrixPointSize=21;  break;
+case $c < 640:$this->matrixPointSize=22;  break;
+case $c < 672:$this->matrixPointSize=23;  break;
+case $c < 744:$this->matrixPointSize=24;  break;
+case $c < 779:$this->matrixPointSize=25;  break;
+case $c < 864:$this->matrixPointSize=26;  break;
+case $c < 910:$this->matrixPointSize=27;  break;
+case $c < 958:$this->matrixPointSize=28;  break;
+case $c < 1016:$this->matrixPointSize=29;  break;
+case $c < 1080:$this->matrixPointSize=30;  break;
+case $c < 1150:$this->matrixPointSize=31;  break;
+case $c < 1226:$this->matrixPointSize=32;  break;
+case $c < 1307:$this->matrixPointSize=33;  break;
+case $c < 1394:$this->matrixPointSize=34;  break;
+case $c < 1431:$this->matrixPointSize=35;  break;
+case $c < 1530:$this->matrixPointSize=36;  break;
+case $c < 1591:$this->matrixPointSize=37;  break;
+case $c < 1658:$this->matrixPointSize=38;  break;
+case $c < 1774:$this->matrixPointSize=39;  break;
+case $c < 1852:$this->matrixPointSize=40;  break;
+default: return FALSE;
+                        }
+                    break;
+                    case 'Q':
+                        switch ($c) {
+case $c < 16:$this->matrixPointSize=1;  break;
+case $c < 29:$this->matrixPointSize=2;  break;
+case $c < 47:$this->matrixPointSize=3;  break;
+case $c < 67:$this->matrixPointSize=4;  break;
+case $c < 87:$this->matrixPointSize=5;  break;
+case $c < 108:$this->matrixPointSize=6;  break;
+case $c < 125:$this->matrixPointSize=7;  break;
+case $c < 157:$this->matrixPointSize=8;  break;
+case $c < 189:$this->matrixPointSize=9;  break;
+case $c < 221:$this->matrixPointSize=10;  break;
+case $c < 259:$this->matrixPointSize=11;  break;
+case $c < 296:$this->matrixPointSize=12;  break;
+case $c < 352:$this->matrixPointSize=13;  break;
+case $c < 376:$this->matrixPointSize=14;  break;
+case $c < 426:$this->matrixPointSize=15;  break;
+case $c < 470:$this->matrixPointSize=16;  break;
+case $c < 531:$this->matrixPointSize=17;  break;
+case $c < 574:$this->matrixPointSize=18;  break;
+case $c < 644:$this->matrixPointSize=19;  break;
+case $c < 702:$this->matrixPointSize=20;  break;
+case $c < 742:$this->matrixPointSize=21;  break;
+case $c < 823:$this->matrixPointSize=22;  break;
+case $c < 890:$this->matrixPointSize=23;  break;
+case $c < 963:$this->matrixPointSize=24;  break;
+case $c < 1041:$this->matrixPointSize=25;  break;
+case $c < 1094:$this->matrixPointSize=26;  break;
+case $c < 1172:$this->matrixPointSize=27;  break;
+case $c < 1263:$this->matrixPointSize=28;  break;
+case $c < 1322:$this->matrixPointSize=29;  break;
+case $c < 1429:$this->matrixPointSize=30;  break;
+case $c < 1499:$this->matrixPointSize=31;  break;
+case $c < 1618:$this->matrixPointSize=32;  break;
+case $c < 1700:$this->matrixPointSize=33;  break;
+case $c < 1787:$this->matrixPointSize=34;  break;
+case $c < 1867:$this->matrixPointSize=35;  break;
+case $c < 1966:$this->matrixPointSize=36;  break;
+case $c < 2071:$this->matrixPointSize=37;  break;
+case $c < 2181:$this->matrixPointSize=38;  break;
+case $c < 2298:$this->matrixPointSize=39;  break;
+case $c < 2420:$this->matrixPointSize=40;  break;
+default: return FALSE;
+                        }
+                    break;
+                    case 'M':
+                        switch ($c) {
+case $c < 20:$this->matrixPointSize=1;  break;
+case $c < 38:$this->matrixPointSize=2;  break;
+case $c < 61:$this->matrixPointSize=3;  break;
+case $c < 90:$this->matrixPointSize=4;  break;
+case $c < 122:$this->matrixPointSize=5;  break;
+case $c < 154:$this->matrixPointSize=6;  break;
+case $c < 178:$this->matrixPointSize=7;  break;
+case $c < 221:$this->matrixPointSize=8;  break;
+case $c < 262:$this->matrixPointSize=9;  break;
+case $c < 311:$this->matrixPointSize=10;  break;
+case $c < 366:$this->matrixPointSize=11;  break;
+case $c < 419:$this->matrixPointSize=12;  break;
+case $c < 483:$this->matrixPointSize=13;  break;
+case $c < 528:$this->matrixPointSize=14;  break;
+case $c < 600:$this->matrixPointSize=15;  break;
+case $c < 656:$this->matrixPointSize=16;  break;
+case $c < 734:$this->matrixPointSize=17;  break;
+case $c < 816:$this->matrixPointSize=18;  break;
+case $c < 909:$this->matrixPointSize=19;  break;
+case $c < 970:$this->matrixPointSize=20;  break;
+case $c < 1035:$this->matrixPointSize=21;  break;
+case $c < 1134:$this->matrixPointSize=22;  break;
+case $c < 1248:$this->matrixPointSize=23;  break;
+case $c < 1326:$this->matrixPointSize=24;  break;
+case $c < 1451:$this->matrixPointSize=25;  break;
+case $c < 1542:$this->matrixPointSize=26;  break;
+case $c < 1637:$this->matrixPointSize=27;  break;
+case $c < 1732:$this->matrixPointSize=28;  break;
+case $c < 1839:$this->matrixPointSize=29;  break;
+case $c < 1994:$this->matrixPointSize=30;  break;
+case $c < 2113:$this->matrixPointSize=31;  break;
+case $c < 2238:$this->matrixPointSize=32;  break;
+case $c < 2369:$this->matrixPointSize=33;  break;
+case $c < 2506:$this->matrixPointSize=34;  break;
+case $c < 2632:$this->matrixPointSize=35;  break;
+case $c < 2780:$this->matrixPointSize=36;  break;
+case $c < 2894:$this->matrixPointSize=37;  break;
+case $c < 3054:$this->matrixPointSize=38;  break;
+case $c < 3220:$this->matrixPointSize=39;  break;
+case $c < 3391:$this->matrixPointSize=40;  break;
+default: return FALSE;
+                        }
+                    break;
+                }
+                $this->arg[$name]=$value;
+            break;
+            default: $this->arg[$name]=$value; break;
+        }
         return TRUE;
     }
     
@@ -192,142 +267,63 @@ class GigCableLabel {
              if (!array_key_exists($name, $this->arg)) return 10;
             break;
             case 'desc':
-             if (!array_key_exists($name, $this->arg)) return 'Not data has be cued for QR encoding';
+             if (!array_key_exists($name, $this->arg)) return 'No data has be cued for QR encoding';
             break;
         }
-        if (array_key_exists($name, $this->arg)) {
-            return $this->arg[$name];
-        }
-        return '';
+        if (array_key_exists($name, $this->arg)) { return $this->arg[$name]; }
+        return;
     }
     
-    function __toString() {
-
-        $this->mime="text/html";
-        header("Content-Type: ".  $this->mime);   
-
-
-        // size unit
-        $unit='<select id="unit">';
-        $unit.='     <option value="">N/A</option>';
-        $unit.='     <option value="\'">Feet</option>';
-        $unit.='     <option value="m">Meter</option>';
-        $unit.=' </select>';
-        //uses
-        $uses='<select id="department">';
-        $uses.='     <option value="NA" >none</option>';
-        $uses.='     <option value="Power" >Power</option>';
-        $uses.='     <option value="Rigging" >Rigging</option>';
-        $uses.='     <option value="Motors" >Motors</option>';
-        $uses.='     <option value="Lighting" >Lighting</option>';
-        $uses.='     <option value="Audio" >Audio</option>';
-        $uses.='     <option value="Video" >Video</option>';
-        $uses.='     <option value="AV" >A/V</option>';
-        $uses.='     <option value="I.T." >I.T.</option>';
-        $uses.=' </select>';
-        //type
-        $type='<select id="type">';
-        $type.='     <option value="unknown" >Uknown</option>';
-        $type.='     <option value="15 A u-Ground" >15 A u-Ground</option>';
-        $type.='     <option value="15 A twist" >15 A twist</option>';
-        $type.='     <option value="20 A twist" >20 A twist</option>';
-        $type.='     <option value="DMX-3" >DMX-3</option>';
-        $type.='     <option value="DMX-4" >DMX-4</option>';
-        $type.='     <option value="DMX-5" >DMX-5</option>';
-        $type.='     <option value="NL4" >NL4</option>';
-        $type.='     <option value="NL8" >NL8</option>';
-        $type.='     <option value="cat-5|RJ45" >cat-5/RJ45</option>';
-        $type.='     <option value="1|4 " >1/4</option>';
-        $type.='     <option value="1|8" >1/8</option>';
-        $type.='     <option value="RCA" >RCA</option>';
-        $type.='     <option value="S-Video" >S-Video</option>';
-        $type.='     <option value="VGA" >VGA</option>';
-        $type.='     <option value="DVI" >DVI</option>';
-        $type.='     <option value="HDMI" >HDMI</option>';
-        $type.='     <option value="12G SOCA" >12G SOCA</option>';
-        $type.='     <option value="16G SOCA" >16G SOCA</option>';
-        $type.='     <option value="Motor SOCA" >Motor SOCA</option>';
-        $type.='     <option value="Motor Control" >Motor Control</option>';
-        $type.=' </select>';
-        
-        $label='<select id="label1" >';
-        foreach (array('',0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
-        $label .='</select>';
-        $label.='<select id="label2" >';
-        foreach (array('',0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
-        $label.='</select>';
-        $label.='<select id="label3" >';
-        foreach (array(0,1,2,3,4,5,6,7,8,9,'G','S','N','A','B','C','D','E','F','H','I','J','K','L','M','P') as $i) $label.='<option value="'.$i.'">'.$i.'</option>';
-        $label .='</select>';
-        //QR code
-        $size='Size: <select id="size" >';
-        foreach (array(1,2,3,4,5,6,7,8,9,10) as $i) $size.='<option value="'.$i.'"'.(($this->matrixPointSize==$i)?' selected="selected"':'').'>'.$i.'</option>';
-        $size .='</select>  ';
-        $size.='ECC: <select id="level">';
-        $size.='     <option value="L"'.(($this->errorCorrectionLevel=='L')?' selected="selected"':'').'>L - smallest</option>';
-        $size.='     <option value="M"'.(($this->errorCorrectionLevel=='M')?' selected="selected"':'').'>M</option>';
-        $size.='     <option value="Q"'.(($this->errorCorrectionLevel=='Q')?' selected="selected"':'').'>Q</option>';
-        $size.='     <option value="H"'.(($this->errorCorrectionLevel=='H')?' selected="selected"':'').'>H - best</option>';
-        $size.=' </select>';
-        //
-
-        $date=date('m/d/Y',time() );
-        return <<<HTML
-<html  xmlns="http://www.w3.org/1999/xhtml" >
-    <head>
-        <meta http-equiv="Content-Type" content="$this->mime; charset=utf-8" />
-        <meta http-equiv="Content-Language" content="en-us" />
-        <title>$this->title</title>
-        <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-
-        <script type="text/javascript" >
-        $(function(){
-        
-        });
-        </script>
-        <script type="text/javascript" src="js/qr-label.js"></script>
-        <link class="css" type="text/css" href="css/style.css" rel="stylesheet" />
-        <link class="css" type="text/css" href="css/qr.css" rel="stylesheet" />
- 
-    </head>
-    <body>
-
-       <div id="top" >
-         Size/Code: $label $unit | <input type="checkbox"  id="qr" value="true" checked="checked"/>QR  $size
-         <button id='mklabel'>-= Make =-</button>
-       </div>
-       <div id='main' ></div>
-       <div id='maker'>
-         <div id="accordion" >
-          <h3><a href="#">Equipment Info Label</a></h3>
-          <div>
-            Type: $type  <br />
-            Department: $uses <br /> 
-            Date: <input type='text' id='date' value="$date" /><br />
-         </div>
-         <h3><a href="#">Phone Label</a></h3><div><fieldset><legend>Phone:</legend><input type='text' id='tel' /></fieldset></div>
-         <h3><a href="#">URL Label</a></h3><div><fieldset><legend>URL:</legend><input type='text'  id='url' /></fieldset></div>
-         <h3><a href="#">Email Label</a></h3><div><fieldset><legend>Email:</legend><input type='text' id='email' /></fieldset></div>
-        </div>
-        <div id="output"><h3>Click Label for preview</h3>
-          <img id='img' alt='$this->size'/>
-          <select id="page_size">
-           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' selected="selected" >2" Width x 4" Length - 10/Sheet</option>
-           <option value='{"width":"4in", "height":"2in", "number":"10", "x":"2", "y":"5"}' >2" Width x 4" Length - 10/Sheet</option>
-           <option value='{"width":"8.5in", "height":"11in", "number":"1", "x":"1", "y":"1"}' >8.5" Width x 11" Length - 1/Sheet</option>
-           <option value='{"width":"4in", "height":"3.33in", "number":"6", "x":"2", "y":"3"}' >3.33" Width x 4" Length - 6/Sheet</option>
-           <option value='{"width":"2.62in", "height":"1in", "number":"30", "x":"3", "y":"10"}' > 1" Width x 2.62" Length 30/Sheet</option>   
-          </select>
-         </div>
-        <form action="$this->url" ></form>
-      </div>
-    </body>
+    static function print_page($width, $height,$x,$y,$img_style, $imgdata) {
+        if (!ctype_alnum ($width)) return FALSE;
+        if (!ctype_alnum ($height)) return FALSE;
+        if ( ! is_numeric($x)) return FALSE;
+        if ( ! is_numeric($y)) return FALSE;
+        if ( ! is_string($img_style)) return FALSE;
+        if ( ! is_string($imgdata)) return FALSE;
+        $table='<table>';
+        for ($a=0;$a < $y; $a++) {
+            $table.='<tr>';
+            for ($b=0; $b < $x; $b++) {
+                if ($a==0 && $b==0) {
+                 $id='id="one"';
+                 $id_img='id="one_img"';
+                 $class='';
+                 $class_img='';
+                } else {
+                 $id='';
+                 $id_img='';
+                 $class='class="label"';
+                 $class_img='class="label_img"';
+                }
+                $table.='<td '.$id.' '.$class.'><img '.$id_img.' '.$class_img.' src="'.$imgdata.'" /></td>';
+            }
+            $table.='</tr>';
+        }
+        $table.='</table>';
+        header("Content-Type: text/html");
+        echo '<!DOCTYPE HTML>';
+        echo <<<HTML
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <title>Print Page</title>
+  <style type="text/css">
+   body, table, tbody, td, tr { margin: 0; padding: 0; border-width:0; border-spacing: 0; border-collapse:collapse; }
+   table { position: absolute; top:0; left:0; }
+   td{ width: $width; height: $height; }
+   img { $img_style }
+  </style>
+ </head>
+ <body>
+  $table
+ </body>
 </html>
 HTML
-        ;
+;
+     exit();
     }
-    
 
     /**
      * make the image label with width from $_GET
@@ -385,17 +381,74 @@ HTML
 
        if (is_file($filename)) unlink($filename);
        if ($this->qr != '' && is_file($QRfile)) unlink($QRfile);
+       $json=array(
+        'img'=> $this->label,
+        'width' => $width,
+        'height' => $this->height
+        );
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+        header("Last-Modified: " . gmdate( "D, d M Y H:i:s" ) . "GMT"); 
+        header("Cache-Control: no-cache, must-revalidate"); 
+        header("Pragma: no-cache");
+        header("Content-type: application/json");
+        $j= json_encode($json);
+        //So, you'll have to unescape slashes: 
+//$j = str_replace("\/","\\\/",$j); 
 
-        echo $this->label;
- 
+//Then, for the trick, escape doule quotes 
+//$j = str_replace('"','\\\\"',$j);
+echo $j;
+        exit();
+    }
+    
+    static function dir() { return './Projects';}
+    /**
+     *  builds a JSON document of all found ini
+     */
+    static function load_ui() {
+        $ui=__CLASS__.'/ui.ini';
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+        header("Last-Modified: " . gmdate( "D, d M Y H:i:s" ) . "GMT"); 
+        header("Cache-Control: no-cache, must-revalidate"); 
+        header("Pragma: no-cache");
+        header("Content-type: application/json");
+        $ini=parse_ini_file($ui, TRUE);
+        // select box ini files
+        $x=0;
+        
+        foreach (glob(self::dir().'/*', GLOB_ONLYDIR) as $d) {
+            $t=str_replace(array(self::dir().'/'), array(''), $d);
+            if ($t == 'DEFAULT') {
+                $ini['list_name'][$x]['selected']="selected";
+            } else {
+                $ini['list_name'][$x]['selected']="";                
+            }
+            $ini['list_name'][$x]['text']=$t;
+            $ini['list_name'][$x]['value']=$t;
+            $x++;
+        }
+        //$ini['list_name'][$x]['selected']="";             
+        //$ini['list_name'][$x]['text']="Add New Project";
+        //$ini['list_name'][$x]['value']='add_proj';
+        foreach (glob(__CLASS__.'/ui-*.ini') as $c) {
+            $id=str_replace(array(__CLASS__,'.ini', '/ui-' ), array('','',''), $c);
+            $i=parse_ini_file($c, TRUE);
+            foreach($i as $ii){
+                $ini[$id][]=$ii;
+            }
+        }
+        echo json_encode($ini);
+        exit();
     }
     
     function get_bg($k) {
-       return  $this->get_desc($this->color[$k]['code']);
+        if (array_key_exists($k, $this->color))   return  $this->get_desc($this->color[$k]['code']);
+        return  $this->get_desc($this->color['N']['code']);
     }
     
     function get_txt($k) {
-       return $this->get_desc($this->color[$k]['text']);   
+       if (array_key_exists($k, $this->color))    return $this->get_desc($this->color[$k]['text']);
+        return $this->get_desc($this->color['N']['text']);
     }
     
     function get_desc($color) {
