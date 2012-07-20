@@ -14,13 +14,30 @@ text-align: center;
 vertical-align: middle;
 }
 
+#vcard > div > textarea,  #vcard > div > input {  width: 230px;
+float: right;
+margin-right: 30px;}
 
-#maker {
-    width: 320px;
-    height: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
+label { width: 100px;}
+
+#vcard div {
+    height: 30px;
+}
+
+#qtext {
+    height: 200px;
+}
+
+#qrtext > div {
+    height: 40px !important; 
+}
+
+#qrtext > #vcard {
+    height: 200px !important; 
+}
+
+#vcard div {
+    border-width: 0px;
 }
 
 #label {
@@ -39,145 +56,21 @@ vertical-align: middle;
     overflow: hidden;
 }
 
-fieldset > input {
-    width: 95%;
-}
-
-
-
-
-
-#made {
-    position: absolute;
-    width: 265px;
-    height: 650px;
-    right: 0px;
-   /* bottom: 0; */
-   top: 0px;
-   padding-bottom: 10px;
-        z-index: 0;
-}
-
-#output {
-    position: absolute;
-    width: auto;
-    height: auto;
-    left: 330px;
-   /* bottom: 0; */
-   top: 0px;
-   padding-bottom: 10px;
-}
-
-#label_output {
-    width: auto;
-    height: auto;
-    
-    padding-bottom: 15px;
-}
-
-
-#img_label {
-    border-style:  dashed;
-    border-color: #fff;
-    border-width: thick;
-    width: 300px;
-    height: 200px;
-    z-index: 1000;
-    overflow: hidden;
-}
-
-#list {
-
-width: auto;
-padding: 5px;
-margin: 0px;
-height: 500px;
-overflow-y: scroll;
-}
-
 #list_name {
 position: relative;
 right: -2px;
 width: 185px;   
 }
 
-
-#mklabel {
-width: 50%;
-height: 30px;
-text-align: center;
-vertical-align: middle;
-position: relative;
-left: 0;
-top: 0;
-}
-
-#print {
-width: 50%;
-height: 30px;
-text-align: center;
-vertical-align: middle;
-position: absolute;
-right: 0;
-top: 0;
-}
-
-#delete {
-width: 98%;
-height: 30px;
-text-align: center;
-vertical-align: middle;
-}
-#add_proj {
-width: 98%;
-height: 30px;
-text-align: center;
-vertical-align: middle;
-}
-
-#current li  {
- width: 240px;
-font-size: 10px;
-border-width: 0;
-}
-
-#current li > img {
-    height: 90px;
-    padding: 15px;
-}
-
-	#feedback { font-size: 1.4em; }
-	#current .ui-selecting { background: #FECA40; }
-	#current .ui-selected { background: #00009C; color: white; }
-	#current { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-
-#author {
-    position: fixed;
-bottom: 0;
-width: 100%;
+#proj_label {
+height: 600px;
+width: auto;
 margin: 0;
 padding: 0;
-left: 0;
-text-align: center;
-z-index: 50000;
-    
-}
-#qr_ecc {
-    height: auto;
-
-}
-
-#qr_ecc > div {
-    height: auto;
-    overflow: hidden;
-
-}
-#proj_label {
-    height: 130px;
 }
 
 #proj_label div {
-    height: 100px !important;
+height: auto;
 width: auto;
 margin: 0;
 padding: 0;
@@ -187,4 +80,127 @@ padding: 0;
 position: relative;
 right: -10px;
 width: 75%;
+}
+
+/**
+ * CSS fixup reorganization
+ **/
+
+/* current project labels */
+#made {
+width: 71%;
+margin-top: 30px;
+position: absolute;
+top: 0px;
+left: 340px;
+margin-bottom: 10px;
+height: 350px;
+}
+
+#list {
+padding: 5px;
+margin: 0px;
+overflow-y: auto;
+height: 285px;
+}
+
+#current .ui-selecting { background: #FECA40; }
+#current .ui-selected { background: #00009C; color: white; }
+#current { list-style-type: none; margin: 0; padding: 0;  }
+
+#current li  {
+width: 200px;
+height: 160px;
+font-size: 10px;
+border-width: 0;
+float: left;
+text-align: center;
+vertical-align: middle;
+}
+
+#current li > img {
+    width:  80%;
+    padding: 15px;
+}
+
+
+
+
+/* Setting and edit area */
+
+
+ #options {
+    width: 325px;
+    margin-top: 30px;
+}
+
+#label_output {
+width: 210px;
+height: 210px;
+    z-index: 1000;
+    margin: 10px;
+    position: absolute;
+left: 20px;
+bottom: 20px;
+}
+
+#img_label {
+    border-style:  dashed;
+    border-color: #fff;
+    border-width: thick;
+    width: 200px;
+    height: 200px;
+    z-index: 1001;
+    overflow: hidden;
+}
+
+#mklabel  {
+width: 200px;
+height: 50px;
+text-align: center;
+vertical-align: middle;
+position: absolute;
+left: 20px;
+bottom: 20px;
+font-size: 18px;
+}
+
+#open_maker, #open_preview  {
+width: 100%;
+height: 30px;
+text-align: center;
+vertical-align: middle;
+position: relative;
+left: 0;
+top: 0;
+}
+
+ #print, #delete, #add_proj {
+width: 32%;
+height: 30px;
+text-align: center;
+vertical-align: middle;
+position: relative;
+left: 0;
+top: 0;
+margin: 0;
+padding: 0;
+}
+
+/* */
+#author {
+
+width: 98%;
+
+padding: 0;
+text-align: center;
+z-index: 50000;
+    position: absolute;
+    top: 0;
+}
+
+/*  preview_opt*/
+
+#preview_opt > div > div {
+    overflow: hidden;
 }

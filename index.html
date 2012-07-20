@@ -13,77 +13,110 @@
         <link class="css" type="text/css" href="css/qr.css" rel="stylesheet" />
     </head>
     <body>
-        <div id="output">
-         <button id='mklabel'>Make Label</button><button id="print">Preview</button><br />
-                  Labels: <select id="page_size"></select>
-         <div id="label_output" >
-            <h3><a href="#">Edit Label Size</a></h3>
-            <div id="img_label" ><img id='img'/></div>            
-         </div>
-        </div>       
-       
-        <div id='maker'>
-         
-         <div id="top" >
-          <h3><a href="#">Colour Coded Size Label</a></h3>
-          <div>
-           <select id="label1" class="ui-dialog-content ui-widget-content"><option value=""></option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
-           <select id="label2" class="ui-dialog-content ui-widget-content"><option value=""></option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
-           <select id="label3" class="ui-dialog-content ui-widget-content"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
-           <select id="unit"></select>
-          </div> 
-          <h3><a href="#">Alpha Numeric Smart Labels</a></h3>
-          <div>
-            <select id="alphanum1" class="ui-dialog-content ui-widget-content"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="O">O</option><option value="P">P</option><option value="Q">Q</option><option value="R">R</option><option value="S">S</option><option value="T">T</option><option value="U">U</option><option value="V">V</option><option value="W">W</option><option value="X">X</option><option value="Y">Y</option><option value="Z">Z</option></select>
-            <select id="alphanum2" class="ui-dialog-content ui-widget-content"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="O">O</option><option value="P">P</option><option value="Q">Q</option><option value="R">R</option><option value="S">S</option><option value="T">T</option><option value="U">U</option><option value="V">V</option><option value="W">W</option><option value="X">X</option><option value="Y">Y</option><option value="Z">Z</option></select>
-            <select id="alphanum3" class="ui-dialog-content ui-widget-content"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
-            <select id="alphanum4" class="ui-dialog-content ui-widget-content"><option value=""></option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
-          </div>
-         </div>
-         <div id="qr_ecc">
-            <h3><a href="" >Quick Response Code - ECC:</a></h3>
-            <div>
-                 <select id="level"></select>
+        <div id="options">
+            <div id='lang' >
+               <input type="radio" name="lang" id="en" checked=""><label for="en">English</label>
+               <input type="radio" name="lang" id="fr" ><label for="fr">French</label>
+               <input type="radio" name="lang" id="ar"><label for="ar">Arabic</label>
             </div>
-            
-         </div>
-         
-         <div id="accordion" >
-          <h3><a href="#">Equipment Info Label</a></h3>
-          <div>
-           Type: <select id="type"></select>  <br />
-           Department: <select id="department"></select> <br /> 
-          </div>
-          <h3><a href="#">Phone Label</a></h3><div><fieldset><legend>Phone:</legend><input type='text' id='tel' /></fieldset></div>
-          <h3><a href="#">URL Label</a></h3><div><fieldset><legend>URL:</legend><input type='text' id='url' /></fieldset></div>
-          <h3><a href="#">Email Label</a></h3><div><fieldset><legend>Email:</legend><input type='text' id='email' /></fieldset></div>
-          <h3><a href="#">VCARD Label</a></h3><div><fieldset><legend>Address:</legend>
-          <label for="vcard_name" >Name:</label></label><input type='text' id='vcard_name' /><br />
-          <label for="vcard_tel" >Phone:</label><input type='text' id='vcard_tel' /><br />
-          <label for="vcard_email" >E-Mail:</label><input type='text' id='vcard_email' /><br />
-          <label for="vcard_web" >Website:</label><input type='text' id='vcard_web' /><br />
-          <label for="vcard_address" >Address:</label><input type='text' id='vcard_address' /><br />
-          <label for="vcard_coy" >Company:</label><input type='text' id='vcard_coy' /><br />
-          <label for="vcard_note" >Note:</label><textarea id='vcard_note' ></textarea><br />
-         </fieldset>
+            <div id="top" >
+                <h3><a href="#" id="numeric">Numeric Size Label</a></h3>
+                <div>
+                    <select id="num1" class="ui-dialog-content ui-widget-content"><option value=""></option></select>
+                    <select id="num2" class="ui-dialog-content ui-widget-content"><option value=""></option></select>
+                    <select id="num3" class="ui-dialog-content ui-widget-content"></select>
+                    <select id="unit"></select>
+                </div> 
+                <h3><a href="#" id="alphanumeric">Alphanumeric Label</a></h3>
+                <div>
+                    <select id="alphanum1" class="ui-dialog-content ui-widget-content"><option value=""></option></select>
+                    <select id="alphanum2" class="ui-dialog-content ui-widget-content"></select>
+                    <select id="alphanum3" class="ui-dialog-content ui-widget-content"><option value=""></select>
+                    <select id="alphanum4" class="ui-dialog-content ui-widget-content"><option value=""></select>
+                    <select id="alphanum5" class="ui-dialog-content ui-widget-content"></select>
+                </div>
+
+            </div>
+            <br /><br />
+            <fieldset>
+                <legend id="opt">Options</legend>
+                <button id="open_maker">QR Code</button>
+                <button id="open_preview">Print Out Page</button>                
+            </fieldset>
+
+          
+
         </div>
-       </div>
-      </div>
+
+        <div id='maker'>
+            <span id='ecc_lvl'>ECC Level</span>: <select id="level"></select><br />
+            <div id="qrtext" >
+                <h3><a href="#" id="equip_info">Equipment Info Label</a></h3>
+                <div>
+                <span id='type_label'>Type</span>: <select id="type"></select>  <br />
+                <span id='dept_label'>Department</span>: <select id="department"></select> <br /> 
+                </div>
+                <h3><a href="#" id="tel_label">Phone Label</a></h3><div><input type='text' id='tel' /></div>
+                <h3><a href="#" id="url_label">URL Label</a></h3><div><input type='text' id='url' /></div>
+                <h3><a href="#" id="email_label">Email Label</a></h3><div><input type='text' id='email' /></div>
+                <h3><a href="#" id="vcard_label">VCARD Label</a></h3><div id="vcard">
+                    <div>
+                        <label for="vcard_name" id="vcard_label_name">Name</label>:</label><input type='text' id='vcard_name' />
+                    </div><div>
+                        <label for="vcard_tel" id="vcard_label_tel">Phone</label>:<input type='text' id='vcard_tel' />
+                    </div><div>
+                        <label for="vcard_email" id="vcard_label_email">E-Mail</label>:<input type='text' id='vcard_email' />
+                    </div><div>
+                        <label for="vcard_web" id="vcard_label_web">Website</label>:<input type='text' id='vcard_web' />
+                    </div><div>
+                        <label for="vcard_address" id="vcard_label_address">Address</label>:<input type='text' id='vcard_address' />
+                    </div><div>
+                        <label for="vcard_coy" id="vcard_label_coy">Company</label>:<input type='text' id='vcard_coy' />
+                    </div><div>
+                        <label for="vcard_note" id="vcard_label_note">Note</label>:<textarea id='vcard_note' ></textarea>
+                    </div>
+            </div>
+        </div>
+    </div>
+        
     <div id='made'>
-     <div id="proj_label">   
-         <h3><a href='#'>Project Labels</a></h3>
-         <div>
-         Project: <select id="list_name"></select><br />
-         <button id='add_proj'>Add New</button><br />
-         <button id="delete">Delete Selected</button>
-         </div>
+        <h3 class="ui-widget-header ui-accordion-header ui-helper-reset ui-state-default ui-state-active ui-corner-top">
+            <a href="#" id="proj_label">Project Labels</a>
+        </h3>            <button id='add_proj'>Gig Label Projects</button>
+        <button id="delete">Delete Selected</button>
+            <button id="print">Preview</button>
+        <div id="list"><ul id='current'></ul></div>
     </div>    
-     <div id="list"><ul id='current'></ul></div>
+    <button id='mklabel'>Make Label</button>
+    <div id="label_output" >
+        <h3 id="label_output_title" class="ui-widget-header ui-accordion-header ui-helper-reset ui-state-default ui-state-active ui-corner-top">Edit Label Size</h3>
+        <div id="img_label" ><img id='img'/></div>
     </div>
     <div id="add_project">
-     <input type="text" id="project_name" />
+        <span id="list_label">Projects</span>: <select id="list_name"></select><br />
+        <span id="project_label">New</span>: <input type="text" id="project_name" />
     </div>
-      <form id='action' action="giglabel.php" ></form>
-      <div id="author">GigCableLabel has been developed by Karl Holz</div>
+        <div id="preview_opt">
+            <div>
+                <h3 id="page_size_label">Labels:</h3>
+                <div><select id="page_size"></select></div>
+                <h3 id="page_size_custom_label">Custom Size:</h3>
+                <div>
+                    <label id="page_size_custom_size" >Size:</label>:</label><input size="4" type='text' id='label_width' />X<input size="4" type='text' id='label_height' /><br />
+                    <label id="page_size_custom_sheet" >Sheet:</label>:<input size="2" type='text' id='label_x' />X<input size="2" type='text' id='label_y' />
+                </div>
+            </div>
+        </div>
+        
+        <div id="help">
+            <p>The height and width for custom sizes can be in:
+                <br />- imperial (e.g. 2in or 2.5in)
+                <br />- metrec (e.g. 2cm or 2.5cm)
+                <br />- pixels (e.g. 255px)
+            </p>
+
+        </div>
+        <form id='action' action="giglabel.php" ></form>
+        <div id="author">GigCableLabel has been developed by Karl Holz</div>
     </body>
 </html>

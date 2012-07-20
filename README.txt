@@ -7,24 +7,36 @@ single industry standard for labeling their many cables, cases, lighting, audio,
 
 I wrote this program to help solve a problem that can help companies adopt a single standard for color coded labeling based on the resister
 colour code for 0-9 and I have added an alpha numeric number generator for patch list id's.  The alphanumeric codes are a maximum of
-4 characters, 2 Letters and 2 numbers.  QR code generation is placed beside the colour coded label.
+5 characters A-Z,0-9.  QR code generation is placed beside the colour coded label.
 
 The generated QR code can contain:
-URL
-E-mail address
-Phone Number 
-Address VCARDS
-Custom Gig Label
+
+-URL
+-E-mail address
+-Phone Number 
+-SMS
+-Address VCARDS
+-Calendar Event
+-Custom Text
 
 QR codes have many uses for inventory, logistics, documentation, manifests or usage instructions to name a few.
 
 I'm just tired of wasting my time looking for the right size cable when they are all labeled
-differently or not at ALL! on a job site. 
+differently or not at ALL! on a job site.  
 
-An example of the dilemma I would face when looking for a 50 foot cable; which cable is more likely to be a 50 ft cable marking that is clear? 
+An example of the dilemma I would face when looking for a 50 foot cable; which cable is more likely to be a 50 ft
+cable marking that is clear? 
+
 - The one with the red label?
+- The one with the white label?
 - The one with the yellow label? 
 - Green and Black label?
+
+In the resistor code, Green is 5 and Black is 0; so what do you think makes the most sence when hiring many freelancers and/or techs/hands from
+labour companies?  The resistor code is the winner, but all the 
+
+
+-------------------------------------------------------------------------------------------------------------------
 
 The QR code generation is from phpqrcode, this works very well and can be turned off in the class (not in the demo)
 
@@ -42,23 +54,38 @@ The GigCableLabel demo will demonstrate this class in a RESTful Setup with PHP 5
 directory, DELETE the selected labels from the project directory and POST a new project for labels.  There is still more work todo to make
 this tool a success, the UI is still very beta.  
 
-- I don't have any way to edit/display current labels yet, just delete them from the server.
-- I don't have a function to change the  projects, just add new project folder and add files them
-- All HTTP errors can be viewed in your web browsers  dev tools, I use Safari's webkit.
+- I don't have any way to display saved labels yet, just delete them from the server. double click didn't seem to work for selectable
+- double click the new label to clear the new image and close the window or drag and drop the label on the project window to save it.
+- added some multilingual support, English and goggle translated French, Arabic will be next -- Inshallah.
+- I have also added Arabic Number and Letter labels, but with an English UI
+- Multiple projects are now supported for multiple shows, shops, etc and can be made and loaded dynamically.
+- Most of the web apps text has been moved into ini text files and loaded as a single JSON object, making it easier to edit and add translations
+- added support for custom label sizes and page layout
 
-
+//-------------------------------------------------------------------
+// Class setup
+//-------------------------------------------------------------------
 // basic php setup for using Gig Cable Labeler as a stand alone setup    
     $label=new GigCableLabel(96);    // 96, this must be a number   
     $label->make_label();
     $label->qr=TRUE;
     if (isset($level)) $label->errorCorrectionLevel=$level;
     if ($label->desc=trim($desc)) $label->make_label();
-header("HTTP/1.0 413 Request Entity Too Large");
- echo "<h1>HTTP/1.0 413 Request Entity Too Large</h1>";
- echo "You're discription is too large for this resource<br />- Consider lowering the Error Correction Capability <br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
+    header("HTTP/1.0 404 Not Found");
+    echo "<h1>HTTP/1.0 404 Not Found</h1>";
+    echo "Label Not Found or couldn't be generated<br />";
+    echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
+    echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
     exit();
-    
+//-----------------------------------------------------------------   
     
     look at the giglabel.php file for an example of how to use this class.
+
+//-----------------------------------------------------------------       
+// Thanks
+//-----------------------------------------------------------------   
+ 
+- For creating the Arabic Images i took a look at the ArGlyphs class by a brother from Syria - Khaled Al-Shamaa
+ http://www.phpclasses.org/package/3192-PHP-Convert-Arabic-text-to-Unicode-for-rendering.html
+ 
+It showed me how to use a ttf font file for creating UNICODE text images in GD images with imagettftext; imagestring was making the text too small.

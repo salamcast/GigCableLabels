@@ -4,6 +4,7 @@
  Generates a Resister code based Image based on a number
  */
 require_once 'phpqrcode/qrlib.php';
+
 class GigCableLabel {
     private $id=array();
     /**
@@ -16,9 +17,21 @@ class GigCableLabel {
     private $hex;
     
     private $arg=array();
+
+    private $charmap=array();    
     
-    
-    function __construct($size='', $code="NA") {
+    function __construct($size='') {
+        // This is where mac OS X has is stored
+        if (is_file('/Library/Fonts/Arial Unicode.ttf')) {
+            $this->font  = '/Library/Fonts/Arial Unicode.ttf';
+        } else {
+            // get a copy of this file or set your own ttf font
+            // http://www.microsoft.com/typography/fonts/font.aspx?fmid=1081
+            // $label->font="<your unicode ttf font>.ttf"
+            $this->font  = 'Arial Unicode.ttf';// name of file on Mac OS X Lion
+            //$this->font  = 'arialuni.ttf';          
+        }
+        $this->font_size=16;
         $this->qr=FALSE;
         $this->unit='';
         $this->url='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
@@ -29,19 +42,13 @@ class GigCableLabel {
             exit();
         }
         $this->size=$size;
-
+        // 
         $this->hex=parse_ini_file(__CLASS__.'/data.ini');
+        // char map for other character like arabic for number 0-9
+        $this->charmap=parse_ini_file(__CLASS__.'/char_map.ini', TRUE);
         // set colour codes
-        switch ($code) {
-            case 'NA':
-            default:
-                $this->color=parse_ini_file(__CLASS__.'/north_america.ini', TRUE);                
-            break;
-        }
-        foreach (glob(__CLASS__.'/ui-*.ini') as $c) {   
-            $this->id[]=str_replace(array(__CLASS__,'.ini', '/ui-' ), array('','',''), $c);
-        }
-
+        $this->color=parse_ini_file(__CLASS__.'/colour_code.ini', TRUE);                
+       
         return TRUE;
     }
     
@@ -55,6 +62,12 @@ class GigCableLabel {
             case 'matrixPointSize':
                 if ($value < 41 && $value > 0) { $this->arg[$name]= min(max((int)$value, 1), 40); }
             break;
+            case 'lang':
+//                var_dump($this->charmap); exit();
+                $keys=array_keys($this->charmap['0']);
+                if (!in_array($value, $keys)) return FALSE;
+                $this->arg[$name]=$value;
+            break;
             case 'desc':
                 $c=strlen($value);
                     // these numbers are based on the maximum alphanumeric per qrcode ECC Level
@@ -63,182 +76,182 @@ class GigCableLabel {
                 switch ($this->errorCorrectionLevel) {
                     case 'L':
                         switch ($c) {
-case $c < 25:$this->matrixPointSize=1;  break;
-case $c < 47:$this->matrixPointSize=2;  break;
-case $c < 77:$this->matrixPointSize=3;  break;
-case $c < 114:$this->matrixPointSize=4;  break;
-case $c < 154:$this->matrixPointSize=5;  break;
-case $c < 195:$this->matrixPointSize=6;  break;
-case $c < 224:$this->matrixPointSize=7;  break;
-case $c < 279:$this->matrixPointSize=8;  break;
-case $c < 335:$this->matrixPointSize=9;  break;
-case $c < 395:$this->matrixPointSize=10;  break;
-case $c < 468:$this->matrixPointSize=11;  break;
-case $c < 535:$this->matrixPointSize=12;  break;
-case $c < 619:$this->matrixPointSize=13;  break;
-case $c < 667:$this->matrixPointSize=14;  break;
-case $c < 758:$this->matrixPointSize=15;  break;
-case $c < 854:$this->matrixPointSize=16;  break;
-case $c < 938:$this->matrixPointSize=17;  break;
-case $c < 1046:$this->matrixPointSize=18;  break;
-case $c < 1153:$this->matrixPointSize=19;  break;
-case $c < 1249:$this->matrixPointSize=20;  break;
-case $c < 1352:$this->matrixPointSize=21;  break;
-case $c < 1460:$this->matrixPointSize=22;  break;
-case $c < 1588:$this->matrixPointSize=23;  break;
-case $c < 1704:$this->matrixPointSize=24;  break;
-case $c < 1853:$this->matrixPointSize=25;  break;
-case $c < 1990:$this->matrixPointSize=26;  break;
-case $c < 2132:$this->matrixPointSize=27;  break;
-case $c < 2223:$this->matrixPointSize=28;  break;
-case $c < 2369:$this->matrixPointSize=29;  break;
-case $c < 2520:$this->matrixPointSize=30;  break;
-case $c < 2677:$this->matrixPointSize=31;  break;
-case $c < 2840:$this->matrixPointSize=32;  break;
-case $c < 3009:$this->matrixPointSize=33;  break;
-case $c < 3183:$this->matrixPointSize=34;  break;
-case $c < 3351:$this->matrixPointSize=35;  break;
-case $c < 3537:$this->matrixPointSize=36;  break;
-case $c < 3729:$this->matrixPointSize=37;  break;
-case $c < 3927:$this->matrixPointSize=38;  break;
-case $c < 4087:$this->matrixPointSize=39;  break;
-case $c < 4296:$this->matrixPointSize=40;  break;
-default: return FALSE;
+                            case $c < 25:$this->matrixPointSize=1;  break;
+                            case $c < 47:$this->matrixPointSize=2;  break;
+                            case $c < 77:$this->matrixPointSize=3;  break;
+                            case $c < 114:$this->matrixPointSize=4;  break;
+                            case $c < 154:$this->matrixPointSize=5;  break;
+                            case $c < 195:$this->matrixPointSize=6;  break;
+                            case $c < 224:$this->matrixPointSize=7;  break;
+                            case $c < 279:$this->matrixPointSize=8;  break;
+                            case $c < 335:$this->matrixPointSize=9;  break;
+                            case $c < 395:$this->matrixPointSize=10;  break;
+                            case $c < 468:$this->matrixPointSize=11;  break;
+                            case $c < 535:$this->matrixPointSize=12;  break;
+                            case $c < 619:$this->matrixPointSize=13;  break;
+                            case $c < 667:$this->matrixPointSize=14;  break;
+                            case $c < 758:$this->matrixPointSize=15;  break;
+                            case $c < 854:$this->matrixPointSize=16;  break;
+                            case $c < 938:$this->matrixPointSize=17;  break;
+                            case $c < 1046:$this->matrixPointSize=18;  break;
+                            case $c < 1153:$this->matrixPointSize=19;  break;
+                            case $c < 1249:$this->matrixPointSize=20;  break;
+                            case $c < 1352:$this->matrixPointSize=21;  break;
+                            case $c < 1460:$this->matrixPointSize=22;  break;
+                            case $c < 1588:$this->matrixPointSize=23;  break;
+                            case $c < 1704:$this->matrixPointSize=24;  break;
+                            case $c < 1853:$this->matrixPointSize=25;  break;
+                            case $c < 1990:$this->matrixPointSize=26;  break;
+                            case $c < 2132:$this->matrixPointSize=27;  break;
+                            case $c < 2223:$this->matrixPointSize=28;  break;
+                            case $c < 2369:$this->matrixPointSize=29;  break;
+                            case $c < 2520:$this->matrixPointSize=30;  break;
+                            case $c < 2677:$this->matrixPointSize=31;  break;
+                            case $c < 2840:$this->matrixPointSize=32;  break;
+                            case $c < 3009:$this->matrixPointSize=33;  break;
+                            case $c < 3183:$this->matrixPointSize=34;  break;
+                            case $c < 3351:$this->matrixPointSize=35;  break;
+                            case $c < 3537:$this->matrixPointSize=36;  break;
+                            case $c < 3729:$this->matrixPointSize=37;  break;
+                            case $c < 3927:$this->matrixPointSize=38;  break;
+                            case $c < 4087:$this->matrixPointSize=39;  break;
+                            case $c < 4296:$this->matrixPointSize=40;  break;
+                            default: return FALSE;
                         }
                     break;
                     case 'H':
                         switch ($c) {
-case $c < 10:$this->matrixPointSize=1;  break;
-case $c < 20:$this->matrixPointSize=2;  break;
-case $c < 35:$this->matrixPointSize=3;  break;
-case $c < 50:$this->matrixPointSize=4;  break;
-case $c < 64:$this->matrixPointSize=5;  break;
-case $c < 84:$this->matrixPointSize=6;  break;
-case $c < 93:$this->matrixPointSize=7;  break;
-case $c < 122:$this->matrixPointSize=8;  break;
-case $c < 143:$this->matrixPointSize=9;  break;
-case $c < 174:$this->matrixPointSize=10;  break;
-case $c < 200:$this->matrixPointSize=11;  break;
-case $c < 227:$this->matrixPointSize=12;  break;
-case $c < 259:$this->matrixPointSize=13;  break;
-case $c < 283:$this->matrixPointSize=14;  break;
-case $c < 321:$this->matrixPointSize=15;  break;
-case $c < 365:$this->matrixPointSize=16;  break;
-case $c < 408:$this->matrixPointSize=17;  break;
-case $c < 452:$this->matrixPointSize=18;  break;
-case $c < 493:$this->matrixPointSize=19;  break;
-case $c < 557:$this->matrixPointSize=20;  break;
-case $c < 587:$this->matrixPointSize=21;  break;
-case $c < 640:$this->matrixPointSize=22;  break;
-case $c < 672:$this->matrixPointSize=23;  break;
-case $c < 744:$this->matrixPointSize=24;  break;
-case $c < 779:$this->matrixPointSize=25;  break;
-case $c < 864:$this->matrixPointSize=26;  break;
-case $c < 910:$this->matrixPointSize=27;  break;
-case $c < 958:$this->matrixPointSize=28;  break;
-case $c < 1016:$this->matrixPointSize=29;  break;
-case $c < 1080:$this->matrixPointSize=30;  break;
-case $c < 1150:$this->matrixPointSize=31;  break;
-case $c < 1226:$this->matrixPointSize=32;  break;
-case $c < 1307:$this->matrixPointSize=33;  break;
-case $c < 1394:$this->matrixPointSize=34;  break;
-case $c < 1431:$this->matrixPointSize=35;  break;
-case $c < 1530:$this->matrixPointSize=36;  break;
-case $c < 1591:$this->matrixPointSize=37;  break;
-case $c < 1658:$this->matrixPointSize=38;  break;
-case $c < 1774:$this->matrixPointSize=39;  break;
-case $c < 1852:$this->matrixPointSize=40;  break;
-default: return FALSE;
+                            case $c < 10:$this->matrixPointSize=1;  break;
+                            case $c < 20:$this->matrixPointSize=2;  break;
+                            case $c < 35:$this->matrixPointSize=3;  break;
+                            case $c < 50:$this->matrixPointSize=4;  break;
+                            case $c < 64:$this->matrixPointSize=5;  break;
+                            case $c < 84:$this->matrixPointSize=6;  break;
+                            case $c < 93:$this->matrixPointSize=7;  break;
+                            case $c < 122:$this->matrixPointSize=8;  break;
+                            case $c < 143:$this->matrixPointSize=9;  break;
+                            case $c < 174:$this->matrixPointSize=10;  break;
+                            case $c < 200:$this->matrixPointSize=11;  break;
+                            case $c < 227:$this->matrixPointSize=12;  break;
+                            case $c < 259:$this->matrixPointSize=13;  break;
+                            case $c < 283:$this->matrixPointSize=14;  break;
+                            case $c < 321:$this->matrixPointSize=15;  break;
+                            case $c < 365:$this->matrixPointSize=16;  break;
+                            case $c < 408:$this->matrixPointSize=17;  break;
+                            case $c < 452:$this->matrixPointSize=18;  break;
+                            case $c < 493:$this->matrixPointSize=19;  break;
+                            case $c < 557:$this->matrixPointSize=20;  break;
+                            case $c < 587:$this->matrixPointSize=21;  break;
+                            case $c < 640:$this->matrixPointSize=22;  break;
+                            case $c < 672:$this->matrixPointSize=23;  break;
+                            case $c < 744:$this->matrixPointSize=24;  break;
+                            case $c < 779:$this->matrixPointSize=25;  break;
+                            case $c < 864:$this->matrixPointSize=26;  break;
+                            case $c < 910:$this->matrixPointSize=27;  break;
+                            case $c < 958:$this->matrixPointSize=28;  break;
+                            case $c < 1016:$this->matrixPointSize=29;  break;
+                            case $c < 1080:$this->matrixPointSize=30;  break;
+                            case $c < 1150:$this->matrixPointSize=31;  break;
+                            case $c < 1226:$this->matrixPointSize=32;  break;
+                            case $c < 1307:$this->matrixPointSize=33;  break;
+                            case $c < 1394:$this->matrixPointSize=34;  break;
+                            case $c < 1431:$this->matrixPointSize=35;  break;
+                            case $c < 1530:$this->matrixPointSize=36;  break;
+                            case $c < 1591:$this->matrixPointSize=37;  break;
+                            case $c < 1658:$this->matrixPointSize=38;  break;
+                            case $c < 1774:$this->matrixPointSize=39;  break;
+                            case $c < 1852:$this->matrixPointSize=40;  break;
+                            default: return FALSE;
                         }
                     break;
                     case 'Q':
                         switch ($c) {
-case $c < 16:$this->matrixPointSize=1;  break;
-case $c < 29:$this->matrixPointSize=2;  break;
-case $c < 47:$this->matrixPointSize=3;  break;
-case $c < 67:$this->matrixPointSize=4;  break;
-case $c < 87:$this->matrixPointSize=5;  break;
-case $c < 108:$this->matrixPointSize=6;  break;
-case $c < 125:$this->matrixPointSize=7;  break;
-case $c < 157:$this->matrixPointSize=8;  break;
-case $c < 189:$this->matrixPointSize=9;  break;
-case $c < 221:$this->matrixPointSize=10;  break;
-case $c < 259:$this->matrixPointSize=11;  break;
-case $c < 296:$this->matrixPointSize=12;  break;
-case $c < 352:$this->matrixPointSize=13;  break;
-case $c < 376:$this->matrixPointSize=14;  break;
-case $c < 426:$this->matrixPointSize=15;  break;
-case $c < 470:$this->matrixPointSize=16;  break;
-case $c < 531:$this->matrixPointSize=17;  break;
-case $c < 574:$this->matrixPointSize=18;  break;
-case $c < 644:$this->matrixPointSize=19;  break;
-case $c < 702:$this->matrixPointSize=20;  break;
-case $c < 742:$this->matrixPointSize=21;  break;
-case $c < 823:$this->matrixPointSize=22;  break;
-case $c < 890:$this->matrixPointSize=23;  break;
-case $c < 963:$this->matrixPointSize=24;  break;
-case $c < 1041:$this->matrixPointSize=25;  break;
-case $c < 1094:$this->matrixPointSize=26;  break;
-case $c < 1172:$this->matrixPointSize=27;  break;
-case $c < 1263:$this->matrixPointSize=28;  break;
-case $c < 1322:$this->matrixPointSize=29;  break;
-case $c < 1429:$this->matrixPointSize=30;  break;
-case $c < 1499:$this->matrixPointSize=31;  break;
-case $c < 1618:$this->matrixPointSize=32;  break;
-case $c < 1700:$this->matrixPointSize=33;  break;
-case $c < 1787:$this->matrixPointSize=34;  break;
-case $c < 1867:$this->matrixPointSize=35;  break;
-case $c < 1966:$this->matrixPointSize=36;  break;
-case $c < 2071:$this->matrixPointSize=37;  break;
-case $c < 2181:$this->matrixPointSize=38;  break;
-case $c < 2298:$this->matrixPointSize=39;  break;
-case $c < 2420:$this->matrixPointSize=40;  break;
-default: return FALSE;
+                            case $c < 16:$this->matrixPointSize=1;  break;
+                            case $c < 29:$this->matrixPointSize=2;  break;
+                            case $c < 47:$this->matrixPointSize=3;  break;
+                            case $c < 67:$this->matrixPointSize=4;  break;
+                            case $c < 87:$this->matrixPointSize=5;  break;
+                            case $c < 108:$this->matrixPointSize=6;  break;
+                            case $c < 125:$this->matrixPointSize=7;  break;
+                            case $c < 157:$this->matrixPointSize=8;  break;
+                            case $c < 189:$this->matrixPointSize=9;  break;
+                            case $c < 221:$this->matrixPointSize=10;  break;
+                            case $c < 259:$this->matrixPointSize=11;  break;
+                            case $c < 296:$this->matrixPointSize=12;  break;
+                            case $c < 352:$this->matrixPointSize=13;  break;
+                            case $c < 376:$this->matrixPointSize=14;  break;
+                            case $c < 426:$this->matrixPointSize=15;  break;
+                            case $c < 470:$this->matrixPointSize=16;  break;
+                            case $c < 531:$this->matrixPointSize=17;  break;
+                            case $c < 574:$this->matrixPointSize=18;  break;
+                            case $c < 644:$this->matrixPointSize=19;  break;
+                            case $c < 702:$this->matrixPointSize=20;  break;
+                            case $c < 742:$this->matrixPointSize=21;  break;
+                            case $c < 823:$this->matrixPointSize=22;  break;
+                            case $c < 890:$this->matrixPointSize=23;  break;
+                            case $c < 963:$this->matrixPointSize=24;  break;
+                            case $c < 1041:$this->matrixPointSize=25;  break;
+                            case $c < 1094:$this->matrixPointSize=26;  break;
+                            case $c < 1172:$this->matrixPointSize=27;  break;
+                            case $c < 1263:$this->matrixPointSize=28;  break;
+                            case $c < 1322:$this->matrixPointSize=29;  break;
+                            case $c < 1429:$this->matrixPointSize=30;  break;
+                            case $c < 1499:$this->matrixPointSize=31;  break;
+                            case $c < 1618:$this->matrixPointSize=32;  break;
+                            case $c < 1700:$this->matrixPointSize=33;  break;
+                            case $c < 1787:$this->matrixPointSize=34;  break;
+                            case $c < 1867:$this->matrixPointSize=35;  break;
+                            case $c < 1966:$this->matrixPointSize=36;  break;
+                            case $c < 2071:$this->matrixPointSize=37;  break;
+                            case $c < 2181:$this->matrixPointSize=38;  break;
+                            case $c < 2298:$this->matrixPointSize=39;  break;
+                            case $c < 2420:$this->matrixPointSize=40;  break;
+                            default: return FALSE;
                         }
                     break;
                     case 'M':
                         switch ($c) {
-case $c < 20:$this->matrixPointSize=1;  break;
-case $c < 38:$this->matrixPointSize=2;  break;
-case $c < 61:$this->matrixPointSize=3;  break;
-case $c < 90:$this->matrixPointSize=4;  break;
-case $c < 122:$this->matrixPointSize=5;  break;
-case $c < 154:$this->matrixPointSize=6;  break;
-case $c < 178:$this->matrixPointSize=7;  break;
-case $c < 221:$this->matrixPointSize=8;  break;
-case $c < 262:$this->matrixPointSize=9;  break;
-case $c < 311:$this->matrixPointSize=10;  break;
-case $c < 366:$this->matrixPointSize=11;  break;
-case $c < 419:$this->matrixPointSize=12;  break;
-case $c < 483:$this->matrixPointSize=13;  break;
-case $c < 528:$this->matrixPointSize=14;  break;
-case $c < 600:$this->matrixPointSize=15;  break;
-case $c < 656:$this->matrixPointSize=16;  break;
-case $c < 734:$this->matrixPointSize=17;  break;
-case $c < 816:$this->matrixPointSize=18;  break;
-case $c < 909:$this->matrixPointSize=19;  break;
-case $c < 970:$this->matrixPointSize=20;  break;
-case $c < 1035:$this->matrixPointSize=21;  break;
-case $c < 1134:$this->matrixPointSize=22;  break;
-case $c < 1248:$this->matrixPointSize=23;  break;
-case $c < 1326:$this->matrixPointSize=24;  break;
-case $c < 1451:$this->matrixPointSize=25;  break;
-case $c < 1542:$this->matrixPointSize=26;  break;
-case $c < 1637:$this->matrixPointSize=27;  break;
-case $c < 1732:$this->matrixPointSize=28;  break;
-case $c < 1839:$this->matrixPointSize=29;  break;
-case $c < 1994:$this->matrixPointSize=30;  break;
-case $c < 2113:$this->matrixPointSize=31;  break;
-case $c < 2238:$this->matrixPointSize=32;  break;
-case $c < 2369:$this->matrixPointSize=33;  break;
-case $c < 2506:$this->matrixPointSize=34;  break;
-case $c < 2632:$this->matrixPointSize=35;  break;
-case $c < 2780:$this->matrixPointSize=36;  break;
-case $c < 2894:$this->matrixPointSize=37;  break;
-case $c < 3054:$this->matrixPointSize=38;  break;
-case $c < 3220:$this->matrixPointSize=39;  break;
-case $c < 3391:$this->matrixPointSize=40;  break;
-default: return FALSE;
+                            case $c < 20:$this->matrixPointSize=1;  break;
+                            case $c < 38:$this->matrixPointSize=2;  break;
+                            case $c < 61:$this->matrixPointSize=3;  break;
+                            case $c < 90:$this->matrixPointSize=4;  break;
+                            case $c < 122:$this->matrixPointSize=5;  break;
+                            case $c < 154:$this->matrixPointSize=6;  break;
+                            case $c < 178:$this->matrixPointSize=7;  break;
+                            case $c < 221:$this->matrixPointSize=8;  break;
+                            case $c < 262:$this->matrixPointSize=9;  break;
+                            case $c < 311:$this->matrixPointSize=10;  break;
+                            case $c < 366:$this->matrixPointSize=11;  break;
+                            case $c < 419:$this->matrixPointSize=12;  break;
+                            case $c < 483:$this->matrixPointSize=13;  break;
+                            case $c < 528:$this->matrixPointSize=14;  break;
+                            case $c < 600:$this->matrixPointSize=15;  break;
+                            case $c < 656:$this->matrixPointSize=16;  break;
+                            case $c < 734:$this->matrixPointSize=17;  break;
+                            case $c < 816:$this->matrixPointSize=18;  break;
+                            case $c < 909:$this->matrixPointSize=19;  break;
+                            case $c < 970:$this->matrixPointSize=20;  break;
+                            case $c < 1035:$this->matrixPointSize=21;  break;
+                            case $c < 1134:$this->matrixPointSize=22;  break;
+                            case $c < 1248:$this->matrixPointSize=23;  break;
+                            case $c < 1326:$this->matrixPointSize=24;  break;
+                            case $c < 1451:$this->matrixPointSize=25;  break;
+                            case $c < 1542:$this->matrixPointSize=26;  break;
+                            case $c < 1637:$this->matrixPointSize=27;  break;
+                            case $c < 1732:$this->matrixPointSize=28;  break;
+                            case $c < 1839:$this->matrixPointSize=29;  break;
+                            case $c < 1994:$this->matrixPointSize=30;  break;
+                            case $c < 2113:$this->matrixPointSize=31;  break;
+                            case $c < 2238:$this->matrixPointSize=32;  break;
+                            case $c < 2369:$this->matrixPointSize=33;  break;
+                            case $c < 2506:$this->matrixPointSize=34;  break;
+                            case $c < 2632:$this->matrixPointSize=35;  break;
+                            case $c < 2780:$this->matrixPointSize=36;  break;
+                            case $c < 2894:$this->matrixPointSize=37;  break;
+                            case $c < 3054:$this->matrixPointSize=38;  break;
+                            case $c < 3220:$this->matrixPointSize=39;  break;
+                            case $c < 3391:$this->matrixPointSize=40;  break;
+                            default: return FALSE;
                         }
                     break;
                 }
@@ -265,6 +278,9 @@ default: return FALSE;
             break;
             case 'size':
              if (!array_key_exists($name, $this->arg)) return 10;
+            break;
+            case 'lang':
+             if (!array_key_exists($name, $this->arg)) return 'en'; //'en';
             break;
             case 'desc':
              if (!array_key_exists($name, $this->arg)) return 'No data has be cued for QR encoding';
@@ -330,40 +346,49 @@ HTML
      */
     function make_label() {
        $w=0;
-       $s=str_split($this->size.$this->unit);
-       $width=$this->width*count($s);
-       if ($this->qr != '') {
-        // user data
-        $QRfile = '.QRcode-'.md5($this->desc.'|'.$this->errorCorrectionLevel.'|'.$this->matrixPointSize).'.png';
-        QRcode::png($this->desc, $QRfile, $this->errorCorrectionLevel, $this->matrixPointSize, 2);
-        if (is_file($QRfile)) {
-         $qrstmp=imagecreatefrompng($QRfile);
-         // @link http://ca3.php.net/manual/en/image.examples-watermark.php
-         $marge_right = 0;
-         $marge_bottom = 0;
-         $sx = imagesx($qrstmp);
-         $sy = imagesy($qrstmp);
-         list($w_qr, $h_qr, $type, $attr) = getimagesize($QRfile);
-         $this->height=$h_qr;
-         $width+=$w_qr;
-        }
-       } else {
-         $this->height=80;
-       }
-       $stamp = imagecreatetruecolor($width, $this->height);
-       foreach ($s as $k) {
-        $bg_bin= $this->get_bg($k);
-        $txt_bin= $this->get_txt($k);
-        $bg = ImageColorAllocate($stamp, $bg_bin[0],  $bg_bin[1],  $bg_bin[2]);
-        $txt= ImageColorAllocate($stamp, $txt_bin[0], $txt_bin[1], $txt_bin[2]);
-        imagefilledrectangle($stamp, $w, 0, $w+$this->width, $this->height, $bg);
-        $t=0;
-        while ($t < $this->height) {
-           $h=round($this->width/2);
-           imagestring($stamp, 5, $w+$h-5, $t, $k, $txt);
-           $t+=15;
-        }
-        $w+=$this->width;
+       $d='';
+//       $s=str_split($this->size.$this->unit);
+        $s=str_split($this->size);
+        $chars=count($s);
+        $this->height=80;
+        $width=($this->height/2);
+        $this->width=$width*$chars;
+        if ($this->qr != '') {
+            // user data
+            $QRfile = '.QRcode-'.md5($this->desc.'|'.$this->errorCorrectionLevel.'|'.$this->matrixPointSize).'.png';
+            QRcode::png($this->desc, $QRfile, $this->errorCorrectionLevel, $this->matrixPointSize, 2);
+            if (is_file($QRfile)) {
+                $qrstmp=imagecreatefrompng($QRfile);
+                // @link http://ca3.php.net/manual/en/image.examples-watermark.php
+                $marge_right = 0;
+                $marge_bottom = 0;
+                $sx = imagesx($qrstmp);
+                $sy = imagesy($qrstmp);
+                list($w_qr, $h_qr, $type, $attr) = getimagesize($QRfile);
+                $this->height=$h_qr;
+                $width=($this->height/2);
+                $this->width=$width*$chars;
+                $this->width+=$w_qr;
+                $this->font_size=$width;
+            }
+        } 
+       
+        $stamp = imagecreatetruecolor($this->width, $this->height);
+        foreach ($s as $k) {
+            $bg_bin= $this->get_bg($k);
+            $txt_bin= $this->get_txt($k);
+            $bg = ImageColorAllocate($stamp, $bg_bin[0],  $bg_bin[1],  $bg_bin[2]);
+            $txt= ImageColorAllocate($stamp, $txt_bin[0], $txt_bin[1], $txt_bin[2]);
+            imagefilledrectangle($stamp, $w, 0, $w+$width, $this->height, $bg);
+            $t=round($this->height/2)+($this->font_size/2);
+        
+            $tag=$k;
+            if (array_key_exists($k, $this->charmap) && array_key_exists($this->lang, $this->charmap[$k])) {
+                $tag=strtoupper($this->charmap[$k][$this->lang]);
+            } 
+            $h=round($this->width/2);
+            imagettftext($stamp, $this->font_size, 0, $w+($width/6), $t, $txt, $this->font, $tag);
+            $w+=$width;
        }
        if ($this->qr != '') {
          // user data
@@ -383,7 +408,7 @@ HTML
        if ($this->qr != '' && is_file($QRfile)) unlink($QRfile);
        $json=array(
         'img'=> $this->label,
-        'width' => $width,
+        'width' => $this->width,
         'height' => $this->height
         );
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
@@ -392,12 +417,7 @@ HTML
         header("Pragma: no-cache");
         header("Content-type: application/json");
         $j= json_encode($json);
-        //So, you'll have to unescape slashes: 
-//$j = str_replace("\/","\\\/",$j); 
-
-//Then, for the trick, escape doule quotes 
-//$j = str_replace('"','\\\\"',$j);
-echo $j;
+        echo $j;
         exit();
     }
     
@@ -405,8 +425,8 @@ echo $j;
     /**
      *  builds a JSON document of all found ini
      */
-    static function load_ui() {
-        $ui=__CLASS__.'/ui.ini';
+    static function load_ui($lang='en') {
+        $ui=__CLASS__.'/'.$lang.'/ui.ini';
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
         header("Last-Modified: " . gmdate( "D, d M Y H:i:s" ) . "GMT"); 
         header("Cache-Control: no-cache, must-revalidate"); 
@@ -415,7 +435,11 @@ echo $j;
         $ini=parse_ini_file($ui, TRUE);
         // select box ini files
         $x=0;
-        
+        $text=parse_ini_file(__CLASS__.'/'.$lang.'/text.ini');
+        foreach ($text as $k => $t) {
+            $ini[$k]['text']=$t;
+        }
+//        if ($lang=='fr') { print_r($ini); exit(); }
         foreach (glob(self::dir().'/*', GLOB_ONLYDIR) as $d) {
             $t=str_replace(array(self::dir().'/'), array(''), $d);
             if ($t == 'DEFAULT') {
@@ -427,16 +451,85 @@ echo $j;
             $ini['list_name'][$x]['value']=$t;
             $x++;
         }
-        //$ini['list_name'][$x]['selected']="";             
-        //$ini['list_name'][$x]['text']="Add New Project";
-        //$ini['list_name'][$x]['value']='add_proj';
-        foreach (glob(__CLASS__.'/ui-*.ini') as $c) {
-            $id=str_replace(array(__CLASS__,'.ini', '/ui-' ), array('','',''), $c);
+        
+        foreach (glob(__CLASS__.'/'.$lang.'/ui-*.ini') as $c) {
+            $id=str_replace(array(__CLASS__,'.ini', '/ui-', '/'.$lang ), array('','','', ''), $c);
             $i=parse_ini_file($c, TRUE);
             foreach($i as $ii){
                 $ini[$id][]=$ii;
             }
         }
+
+        // if $lang is fr, switch to en for use of the same latters and numbers
+        if ($lang == 'fr') { $lang='en'; }
+        
+        // char map for numbers
+        $charmap=parse_ini_file(__CLASS__.'/numbers.ini', TRUE);
+
+        $x=0;
+        $ini["num1"][$x]['selected']="";
+        $ini["num1"][$x]['text']='';
+        $ini["num1"][$x]['value']='';
+        $ini["num2"][$x]['selected']="";
+        $ini["num2"][$x]['text']='';
+        $ini["num2"][$x]['value']='';
+        $ini["num3"][$x]['selected']="";
+        $ini["num3"][$x]['text']='';
+        $ini["num3"][$x]['value']='';
+        $x++;
+        foreach( $charmap as $k => $v) {
+            $ini["num1"][$x]['selected']="";
+            $ini["num1"][$x]['text']=$charmap[$k][$lang];
+            $ini["num1"][$x]['value']=$k;
+            $ini["num2"][$x]['selected']="";
+            $ini["num2"][$x]['text']=$charmap[$k][$lang];
+            $ini["num2"][$x]['value']=$k;
+            $ini["num3"][$x]['selected']="";
+            $ini["num3"][$x]['text']=$charmap[$k][$lang];
+            $ini["num3"][$x]['value']=$k;
+            $x++;
+        }
+        // character map
+        $charmap=parse_ini_file(__CLASS__.'/char_map.ini', TRUE);
+        $x=0;
+                $x=0;
+        $ini["alphanum1"][$x]['selected']="";
+        $ini["alphanum1"][$x]['text']='';
+        $ini["alphanum1"][$x]['value']='';
+        $ini["alphanum2"][$x]['selected']="";
+        $ini["alphanum2"][$x]['text']='';
+        $ini["alphanum2"][$x]['value']='';
+        $ini["alphanum3"][$x]['selected']="";
+        $ini["alphanum3"][$x]['text']='';
+        $ini["alphanum3"][$x]['value']='';
+        $ini["alphanum4"][$x]['selected']="";
+        $ini["alphanum4"][$x]['text']='';
+        $ini["alphanum4"][$x]['value']='';
+        $ini["alphanum5"][$x]['selected']="";
+        $ini["alphanum5"][$x]['text']='';
+        $ini["alphanum5"][$x]['value']='';
+        $x++;
+        foreach( $charmap as $k => $v) {
+            $ini["alphanum1"][$x]['selected']="";
+            $ini["alphanum1"][$x]['text']=strtoupper($charmap[$k][$lang]);
+            $ini["alphanum1"][$x]['value']=$k;
+            $ini["alphanum2"][$x]['selected']="";
+            $ini["alphanum2"][$x]['text']=strtoupper($charmap[$k][$lang]);
+            $ini["alphanum2"][$x]['value']=$k;
+            $ini["alphanum3"][$x]['selected']="";
+            $ini["alphanum3"][$x]['text']=strtoupper($charmap[$k][$lang]);
+            $ini["alphanum3"][$x]['value']=$k;
+            $ini["alphanum4"][$x]['selected']="";
+            $ini["alphanum4"][$x]['text']=strtoupper($charmap[$k][$lang]);
+            $ini["alphanum4"][$x]['value']=$k;
+            $ini["alphanum5"][$x]['selected']="";
+            $ini["alphanum5"][$x]['text']=strtoupper($charmap[$k][$lang]);
+            $ini["alphanum5"][$x]['value']=$k;
+            $x++;
+        }
+           
+
+        
         echo json_encode($ini);
         exit();
     }

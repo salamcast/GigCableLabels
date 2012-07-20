@@ -17,64 +17,90 @@ function success_201($url) {
 *************************************************************************************************************     */
 function error_400() {
  header("HTTP/1.0 400 Bad Request");
- echo "<h1>HTTP/1.0 400 Bad Request</h1>";
- echo "This request failed to load this resource<br />";
- echo "Bad Request: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 400 Bad Request";
+ $http['msg']="This request failed to load this resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
 }
 
-function error_403() {
+function error_403($msg='') {
  header("HTTP/1.0 403 Forbidden");
- echo "<h1>HTTP/1.0 403 Forbidden</h1>";
- echo "You're not allowed to request this resource this way <br />";
- echo "Bad Request: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 403 Forbidden";
+ if ($msg=='' || !is_string($msg)) {
+  $http['msg']="You're not allowed to request this resource this way "; 
+ } else {
+   $http['msg']=$msg;
+ }
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+
 }
 
 function error_404() {
  header("HTTP/1.0 404 Not Found");
- echo "<h1>HTTP/1.0 404 Not Found</h1>";
- echo "Couldn't find the requested resource<br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 404 Not Found";
+ $http['msg']="Couldn't find the requested resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
 }
 
 function error_405() {
  header("HTTP/1.0 405 Method Not Allowed");
- echo "<h1>HTTP/1.0 405 Method Not Allowed</h1>";
- echo "You're not allowed to do this type of request on this resource<br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 405 Method Not Allowed";
+ $http['msg']="You're not allowed to do this type of request on this resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
 }
 
 function error_410() {
  header("HTTP/1.0 410 Gone");
- echo "<h1>HTTP/1.0 410 Gone</h1>";
- echo "This Resource is gone<br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 410 Gone";
+ $http['msg']="This Resource is gone";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
 }
 
 function error_412() {
  header("HTTP/1.0 412 Precondition Failed");
- echo "<h1>HTTP/1.0 412 Precondition Failed</h1>";
- echo "couldn't create/update the resource, try again<br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
-  exit();
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 412 Precondition Failed";
+ $http['msg']="couldn't create/update the resource, try again";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
 }
 
 function error_413() {
  header("HTTP/1.0 413 Request Entity Too Large");
- echo "<h1>HTTP/1.0 413 Request Entity Too Large</h1>";
- echo "You're discription is too large for this resource<br />- Consider lowering the Error Correction Capability <br />";
- echo "Requested Resource: ".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."<br />";
- echo "Go back to the <a href='".'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."' >Main</a> page";
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 413 Request Entity Too Large";
+ $http['msg']="You're discription is too large for this resource<br />- Consider lowering the Error Correction Capability ";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
  exit();
 }
 /***************************************************************************************************************  
@@ -131,13 +157,16 @@ if ($rest) {
      if($method == 'POST') {
       $p=file_get_contents("php://input");
       $post=json_decode($p, true);
+      if (!array_key_exists('project', $post)) error_403();
+      if (!ctype_alnum($post['project'])) error_403();
       $dir=GigCableLabel::dir().'/'.$post['project'];
-      if (!is_dir($dir)) mkdir($dir, 0750, true);
+      if (!is_dir($dir)) mkdir(trim($dir), 0750, true);
       success_201('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
      } else {
       $p=array_shift($r);
-      if  ($p == '' ) { error_400(); }
       $dir=GigCableLabel::dir().'/'.$p;
+      if ($p == '') error_400();
+      if (!ctype_alnum($p)) error_403();
       if (!is_dir($dir)) error_404();
      }
 
@@ -145,9 +174,7 @@ if ($rest) {
        $d=glob($dir.'/*.json');
        $f=$dir.'/'.$imgdata.'.json';
        if (in_array($f, $d)) {
-        if (is_file($f)) {
-         unlink($f);
-        } else { error_410(); }
+        if (is_file($f)) { unlink($f); } else { error_410(); }
        } else { error_404(); }
        unset($d);
      }
@@ -182,16 +209,17 @@ if ($rest) {
       $j=glob($dir."/*.json");
       $proj=array();      
       foreach ($j as $c) {
-       $link='http://'.$_SERVER['HTTP_HOST'].$webdir.trim($c, '.');
+       $link='http://'.$_SERVER['HTTP_HOST'].$webdir.urlencode(trim($c, '.'));
        $f=file_get_contents($c);
        $json=json_decode($f, true);
        $proj[]=$json;
      }
+     
      echo json_encode($proj);
      exit();
      } else { error_405(); }
     break;
-    case 'ui.json': GigCableLabel::load_ui(); break;
+    case 'ui.json': GigCableLabel::load_ui($imgdata); break;
     case 'print':
         $width=array_shift($r);
         $height=array_shift($r);
@@ -200,20 +228,22 @@ if ($rest) {
         $img_style=array_shift($r);
         GigCableLabel::print_page($width, $height,$x,$y,$img_style,$imgdata) || error_404();    
     break;
-    case 'label':
-        $code=array_shift($r);
-        if (!ctype_alnum ($code)) error_404();
-        $label=new GigCableLabel($code);
-        $label->make_label();    
-    break;
+    //case 'label':
+    //    $code=array_shift($r);
+    //    if (!ctype_alnum ($code)) error_404();
+    //    $label=new GigCableLabel($code);
+    //    $label->make_label();    
+    //break;
     case 'QR':
         $lvl=array_shift($r);
         if (! ctype_upper($lvl)) error_404();
         $code=array_shift($r);
         if (!ctype_alnum ($code)) error_404();
+
         $desc=trim(implode('//', $r), '/');
         $label=new GigCableLabel($code);
         $label->qr=TRUE;
+        $label->lang=$imgdata;
         $label->errorCorrectionLevel=$lvl;
         if ($label->desc=trim($desc)) {
           $label->make_label();
