@@ -555,17 +555,137 @@ HTML
     }
 }
 // --------------------------------------------------------
-// Demo Tester
+// functions moved from giglabel.php
 // --------------------------------------------------------
-    //    if (array_key_exists('label', $_GET)) {
-    //        $label=new GigCableLabel($_GET['label']);
-    //    } else {
-    //        $label=new GigCableLabel();       
-    //    }
-    //    // allow customize
-    //    // $this->customize=TRUE;
-    //
-    //
-    //    $label->make_label();
-    //    exit();
+
+/* Gig Cable Label Class demo  */
+/***************************************************************************************************************  
+ * HTTP/1.0 2XX Success Pages
+*************************************************************************************************************     */
+function success_201($url) {
+  header("HTTP/1.0 201 Created");
+  header("Location: ".$url);
+}
+
+/***************************************************************************************************************  
+ * HTTP/1.0 4XX Error Pages
+*************************************************************************************************************     */
+function error_400() {
+ header("HTTP/1.0 400 Bad Request");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 400 Bad Request";
+ $http['msg']="This request failed to load this resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+
+function error_403($msg='') {
+ header("HTTP/1.0 403 Forbidden");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 403 Forbidden";
+ if ($msg=='' || !is_string($msg)) {
+  $http['msg']="You're not allowed to request this resource this way "; 
+ } else {
+   $http['msg']=$msg;
+ }
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+
+}
+
+function error_404() {
+ header("HTTP/1.0 404 Not Found");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 404 Not Found";
+ $http['msg']="Couldn't find the requested resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+
+function error_405() {
+ header("HTTP/1.0 405 Method Not Allowed");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 405 Method Not Allowed";
+ $http['msg']="You're not allowed to do this type of request on this resource";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+
+function error_410() {
+ header("HTTP/1.0 410 Gone");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 410 Gone";
+ $http['msg']="This Resource is gone";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+
+function error_412() {
+ header("HTTP/1.0 412 Precondition Failed");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 412 Precondition Failed";
+ $http['msg']="couldn't create/update the resource, try again";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+
+function error_413() {
+ header("HTTP/1.0 413 Request Entity Too Large");
+ json_header();
+ $http=array();
+ $http['header']="HTTP/1.0 413 Request Entity Too Large";
+ $http['msg']="You're discription is too large for this resource<br />- Consider lowering the Error Correction Capability ";
+ $http['request']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+ $http['link']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+ echo json_encode($http);
+ exit();
+}
+/***************************************************************************************************************  
+ * HTTP application/json header
+*************************************************************************************************************     */
+function json_header() {
+      header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+      header("Last-Modified: " . gmdate( "D, d M Y H:i:s" ) . "GMT"); 
+      header("Cache-Control: no-cache, must-revalidate"); 
+      header("Pragma: no-cache");
+      header("Content-type: application/json");
+}
+/**   *************************************************************************************************************     */
+  /**
+  * Genarates an UUID
+  * 
+  * @author     Anis uddin Ahmad <admin@ajaxray.com>
+  * @link       http://www.phpclasses.org/package/4427-PHP-Generate-feeds-in-RSS-1-0-2-0-an-Atom-formats.html ref
+  * @param      string  an optional prefix
+  * @return     string  the formated uuid
+  */
+ function uuid($key = null, $prefix ='QR') {
+    $key = ($key == null)? 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] : $key;
+    $chars = md5($key);
+    $uuid  = substr($chars,0,8) . '-';
+    $uuid .= substr($chars,8,4) . '-';
+    $uuid .= substr($chars,12,4) . '-';
+    $uuid .= substr($chars,16,4) . '-';
+    $uuid .= substr($chars,20,12);
+    return $prefix .'-'. $uuid;
+  }
+
 ?>
