@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>GigCableLabels by salamcast</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>GigCableLabels</h1>
+        <h2>GigCableLabel Generates colour coded labels using the resister code codes to define cable sizes for easier identification from a distance.</h2>
+        <a href="https://github.com/salamcast/GigCableLabels" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>GigCableLabels</h1>
+
+<p>I currently work as a Tech in the Staging and AV world with various companies and I have noticed that many companies don't really follow a single industry standard for labeling their many cables, cases, lighting, audio, etc.  I wrote this program to help solve a problem that can help companies adopt a single standard for color coded labeling based on the resister colour code for 0-9.  The numeric codes are a maximum of 3 characters 0-9 and a letter for meters or feet.  QR code generation is placed beside the colour coded label.</p>
+
+<h3>The generated QR code can contain:</h3>
+
+<ul>
+<li>URL</li>
+<li>E-mail address</li>
+<li>Phone Number </li>
+<li>SMS</li>
+<li>Address VCARDS</li>
+<li>Calendar Event</li>
+<li>Custom Text</li>
+</ul><p>QR codes have many uses for inventory, logistics, documentation, manifests or usage instructions to name a few.  I'm just tired of wasting my time looking for the right size cable when they are all labeled
+differently or not at ALL! on a job site.  An example of the dilemma I would face when looking for a 50 foot cable; which cable is more likely to be a 50 ft cable marking that is clear? </p>
+
+<ul>
+<li>The one with the red label?</li>
+<li>The one with the white label?</li>
+<li>The one with the yellow label? </li>
+<li>Green and Black label?</li>
+</ul><p>In the resistor code, Green is 5 and Black is 0; so what do you think makes the most sence when hiring many freelancers and/or techs/hands from labour companies?  The resistor code is the winner, but most are stuck in their old ways</p>
+
+<hr><p>The QR code generation is from <a href="http://phpqrcode.sourceforge.net">phpqrcode</a>, this works very well and can be turned off in the class (not in the demo).  The QR code size (1 to 40) will be set based on the input string length and ECC level, all the maximum alphanumeric lengths I test against are listed on this <a href="http://www.qrcode.com/en/vertable4.html">site</a> (link to page 4/4).  I've noticed that stretched QR code images don't work with Norton Snap on my iPhone 4, test your labels before you print any. I have 2 iPhone Apps for testing QR codes, Norton Snap and QRdeCODE. </p>
+
+<h3>The Demo:</h3>
+
+<p>The GigCableLabel demo will demonstrate this class in a RESTful Setup with PHP 5.3 and jQuery.  GET the label, PUT the label in the project directory, DELETE the selected labels from the project directory and POST a new project for labels.  There is still more work todo to make this tool a success, the UI is still very beta, view the <a href="http://www.salamcast.com/demos/GigCableLabels/">Demo</a>.  </p>
+
+<ul>
+<li>double click the new label to clear the new image and close the window or drag and drop the label on the project window to save it.</li>
+<li>added some multilingual support, English and goggle translated French, Arabic will be next -- Inshallah.</li>
+<li>I have also added Arabic Number labels, but with an English UI</li>
+<li>Multiple projects are now supported for multiple shows, shops, etc and can be made and loaded dynamically.</li>
+<li>Most of the web apps text has been moved into ini text files and loaded as a single JSON object, making it easier to edit and add translations</li>
+<li>added support for custom label sizes and page layout</li>
+</ul><h3>A look at the giglabel.php as an example of how to use this class can be used.</h3>
+
+<pre><code>&lt;?php
+require_once 'gigcablelabel.class.php';
+// view switcher
+if     (array_key_exists('ORIG_PATH_INFO', $_SERVER)) { $rest=$_SERVER['ORIG_PATH_INFO']; }
+elseif (array_key_exists('PATH_INFO', $_SERVER)) { $rest=$_SERVER['PATH_INFO']; } else { $rest=''; }
+// imgdata
+if  (array_key_exists('QUERY_STRING', $_SERVER)) { $imgdata=$_SERVER['QUERY_STRING']; } 
+else { $imgdata=''; }
+// RESTful CRUD access switcher
+if  (array_key_exists('REQUEST_METHOD', $_SERVER)) { $method=$_SERVER['REQUEST_METHOD']; } 
+else { $method=''; }
+
+$webdir=str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname(__FILE__));
+
+if ($rest) {
+ $r=explode('/', $rest);
+ array_shift($r); // drop blank before /
+ $page=array_shift($r);
+ switch ($page) {
+    case 'feed':
+     // Make dir
+     if($method == 'POST') {
+      $p=file_get_contents("php://input");
+      $post=json_decode($p, true);
+      if (!array_key_exists('project', $post)) error_403();
+      if (!ctype_alnum($post['project'])) error_403();
+      $dir=GigCableLabel::dir().'/'.$post['project'];
+      if (!is_dir($dir)) mkdir(trim($dir), 0750, true);
+      success_201('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+     } else {
+      $p=array_shift($r);
+      $dir=GigCableLabel::dir().'/'.$p;
+      if ($p == '') error_400();
+      if (!ctype_alnum($p)) error_403();
+      if (!is_dir($dir)) error_404();
+     }
+
+     if($method == 'DELETE') {
+       $d=glob($dir.'/*.json');
+       $f=$dir.'/'.$imgdata.'.json';
+       if (in_array($f, $d)) {
+        if (is_file($f)) { unlink($f); } else { error_410(); }
+       } else { error_404(); }
+       unset($d);
+     } 
+     if ($method == 'PUT') {
+      $j=file_get_contents("php://input");
+      $file=json_decode($j, true);
+      if (! array_key_exists('code',$file) &amp;&amp; !ctype_alnum ($file['code'])) error_404();
+      if (! array_key_exists('width',$file) &amp;&amp; !ctype_alnum ($file['width'])) error_404();
+      if (! array_key_exists('height',$file) &amp;&amp; !ctype_alnum ($file['height'])) error_404();
+      if (! array_key_exists('x',$file) &amp;&amp; !is_numeric($file['x'])) error_404();
+      if (! array_key_exists('y',$file) &amp;&amp; !is_numeric($file['y'])) error_404();
+
+      $file['published']=gmdate(DATE_ATOM,time());
+      $name=$dir."/".str_replace(':', '|', $file['published']).".json";
+      $file['file']=$name;
+      $file['url']='http://'.$_SERVER['HTTP_HOST'].$webdir.trim($name, '.');
+      $file['id']=uuid($name, $file['code']);
+      $file['put']='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+      $file['project']=$p;
+      $json=json_encode($file, JSON_ERROR_SYNTAX);
+      if (! file_put_contents( $name, $json)) { error_412(); }
+      json_header();
+      echo $json;
+      exit();
+
+     } elseif($method == 'DELETE' || $method == 'GET' || $method == 'POST') {
+      $uri='http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+      $id=uuid($uri, 'atom');
+      $date=gmdate(DATE_ATOM,time());
+      json_header();
+      $j=glob($dir."/*.json");
+      $proj=array();      
+      foreach ($j as $c) {
+       $link='http://'.$_SERVER['HTTP_HOST'].$webdir.urlencode(trim($c, '.'));
+       $f=file_get_contents($c);
+       $json=json_decode($f, true);
+       $proj[]=$json;
+      }
+      echo json_encode($proj);
+      exit();
+     } else { error_405(); }
+    break;
+    case 'ui.json': GigCableLabel::load_ui($imgdata); break;
+    case 'print':
+     $width=array_shift($r);
+     $height=array_shift($r);
+     $x=array_shift($r);
+     $y=array_shift($r);
+     $img_style=array_shift($r);
+     GigCableLabel::print_page($width, $height,$x,$y,$img_style,$imgdata) || error_404();    
+    break;
+    //case 'label':
+    //    $code=array_shift($r);
+    //    if (!ctype_alnum ($code)) error_404();
+    //    $label=new GigCableLabel($code);
+    //    $label-&gt;make_label();    
+    //break;
+    case 'QR':
+        $lvl=array_shift($r);
+        if (! ctype_upper($lvl)) error_404();
+        $code=array_shift($r);
+        if (!ctype_alnum ($code)) error_404();
+        $desc=trim(implode('//', $r), '/');
+        $label=new GigCableLabel($code);
+        $label-&gt;qr=TRUE;
+        $label-&gt;lang=$imgdata;
+        $label-&gt;errorCorrectionLevel=$lvl;
+        if ($label-&gt;desc=trim($desc)) {
+          $label-&gt;make_label();
+        } else { error_413(); }
+    break;
+ }
+ exit();
+}
+//$label=new GigCableLabel();       
+//exit();
+?&gt;
+</code></pre>
+
+<h3>Thanks</h3>
+
+<ul>
+<li>For creating the Arabic Images i took a look at the <a href="http://www.phpclasses.org/package/3192-PHP-Convert-Arabic-text-to-Unicode-for-rendering.html">ArGlyphs class</a> by a brother from Syria - Khaled Al-Shamaa </li>
+<li>It showed me how to use a ttf font file for creating UNICODE text images in GD images with imagettftext; imagestring was making the text too small.</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/salamcast/GigCableLabels/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/salamcast/GigCableLabels/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/salamcast/GigCableLabels"></a> is maintained by <a href="https://github.com/salamcast">salamcast</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
